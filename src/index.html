@@ -2,32 +2,90 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
     <title>Nate Otenti | Portfolio</title>
 </head>
 
 <body>
-    <div class="container super-container">
-        <div class="title-content">
-            <div class="title">
-                <div class="row">
-                    <div class="col-10">
-                        <h1>Hi, I'm Nate.
-                            <br />I'm a software engineer.</h1>
-                    </div>
+    <div class="heading" id='heading'>
+        <div class="container">
+            <div class="row">
+                <div class="col-8">
+
                 </div>
-            </div>
-            <div class="description-p">
-                <div class="row">
-                    <div class="col-8">
-                        <p>
-                            I really don't know what to say in this section, so I guess I'll
-                            fill it with random text until I find the inspiration.
-                        </p>
-                    </div>
+                <div class="col-4 align-r">
+                    <li><a href="#work" class="type-dark" id="work-t">Work</a></li>
+                    <li><a href="#projects" class="type-dark" id="projects-t">Projects</a></li>
+                    <li><a href="#about" class="type-dark" id="about-t">About</a></li>
                 </div>
             </div>
         </div>
     </div>
+    <section class="header full-page light-bg" id="home-pane">
+        <div class="container">
+            <div class="row">
+                <div class="col-8">
+                    <h1 class="type-dark">Hi, I'm Nate.
+                        <br />I'm a software engineer.</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <p class="type-dark">
+                        I really don't know what to say in this section, so I guess I'll
+                        fill it with random text until I find some inspiration.
+                    </p>
+                </div>
+            </div>
+            <div class="navigation">
+                <li><a href="#work" class="type-dark">Work</a></li>
+                <li><a href="#projects" class="type-dark">Projects</a></li>
+                <li><a href="#about" class="type-dark">About</a></li>
+            </div>
+            <div class="work">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="app"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="work full-page dark-bg" id="work-pane">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <h3 class="type-light">
+                        Work
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="projects full-page light-bg" id="projects-pane">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <h3 class="type-dark">
+                        Projects
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="about full-page dark-bg" id="about-pane">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <h3 class="type-light">
+                        About
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
     <script src="./bundle.js"></script>
 </body>
+
 </html>

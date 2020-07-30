@@ -1,13 +1,46 @@
-@font-face {
-    font-family: 'Merriweather';
-    src: url('./assets/Merriweather-Regular.woff') format('woff'),
-         url('./assets/Merriweather-Bold.woff') format('woff');
-    font-weight: 600;
-    font-style: normal;
+a {
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-#divElement {
-    color:#1C1C1C;
-    font-family: 'Merriweather';
+a:hover,
+a:active {
+    color: salmon;
+}
 
+.heading {
+    position: fixed;
+    height: 52px;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.heading.hide {
+    top: -53px;
+}
+
+li {
+    list-style-type: none;
+    margin: 15px;
+    display: inline;
+}
+
+
+.type-dark {
+    color: #333447;
+}
+
+.type-light {
+    color: white;
+}
+
+.full-page {
+    height: 100vh;
+}
+
+
+.dark-bg {
+    background-color: #333447;
 }
