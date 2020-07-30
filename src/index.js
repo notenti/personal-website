@@ -7,7 +7,7 @@ const direction = {
     DOWN: 'down'
 }
 var prev_scroll_val = window.scrollY || document.documentElement.scrollTop;
-var prev_scroll_dir = direction.DOWN;
+var prev_scroll_dir = direction.UP;
 var header = document.getElementById('heading');
 
 var checkScroll = function () {
