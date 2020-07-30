@@ -4,8 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "webpack-dev-server --config ./webpack.config.js --mode development",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "webpack-dev-server --config ./webpack.config.js --mode development --open",
+        "build": "webpack --mode production",
+        "dev": "webpack --mode development"
     },
     "keywords": [],
     "author": "",
@@ -16,6 +17,7 @@
         "babel-loader": "^8.1.0",
         "css-loader": "^4.1.0",
         "file-loader": "^6.0.0",
+        "html-webpack-plugin": "^4.3.0",
         "style-loader": "^1.2.1",
         "url-loader": "^4.1.0",
         "webpack": "^4.44.0",
