@@ -45,12 +45,10 @@ function toggleTextColor() {
         w.classList.add('type-light');
         p.classList.add('type-light');
         a.classList.add('type-light');
-        console.log('Adding toggle');
     } else {
         w.classList.remove('type-light');
         p.classList.remove('type-light');
         a.classList.remove('type-light');
-        console.log('Removing toggle');
     }
 }
 
