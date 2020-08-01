@@ -8,9 +8,8 @@ const direction = {
 }
 var prev_scroll_val = window.scrollY || document.documentElement.scrollTop;
 var prev_scroll_dir = direction.UP;
-var header = document.getElementById('heading');
 
-var checkScroll = function () {
+function checkScroll() {
     let cur_scroll_val = window.scrollY || document.documentElement.scrollTop;
     let dir = direction.DOWN;
 
@@ -24,7 +23,21 @@ var checkScroll = function () {
     prev_scroll_val = cur_scroll_val;
 };
 
+function closeToTopOfPage() {
+    const cur_scroll_val = window.scrollY || document.documentElement.scrollTop;
+    const element = document.getElementById("about-pane");
+    if (cur_scroll_val > 100) {
+
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+    }
+}
+
 function toggleHeader(scroll_dir, cur_scroll_val) {
+    let header = document.getElementById('heading');
     if (scroll_dir === direction.DOWN && cur_scroll_val > 52) {
         header.classList.add('hide');
     } else {
@@ -36,10 +49,10 @@ function toggleHeader(scroll_dir, cur_scroll_val) {
 function toggleTextColor() {
     let cur_scroll_val = window.scrollY || document.documentElement.scrollTop;
     const page_partition = document.body.scrollHeight / 4;
-    let w = document.getElementById('work-t');
+    const w = document.getElementById('work-t');
     const p = document.getElementById('projects-t');
     const a = document.getElementById('about-t');
-    let on_panel = Math.floor(cur_scroll_val/page_partition);
+    let on_panel = Math.floor(cur_scroll_val / page_partition);
 
     if (on_panel % 2 === 1) {
         w.classList.add('type-light');
@@ -54,9 +67,7 @@ function toggleTextColor() {
 
 function loadContent() {
     const hash_less_hash = location.hash.substr(1);
-    console.log(hash_less_hash);
     const element = document.getElementById(hash_less_hash.concat("-pane"));
-    console.log(element)
     element.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
