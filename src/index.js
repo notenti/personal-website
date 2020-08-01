@@ -23,19 +23,6 @@ function checkScroll() {
     prev_scroll_val = cur_scroll_val;
 };
 
-function closeToTopOfPage() {
-    const cur_scroll_val = window.scrollY || document.documentElement.scrollTop;
-    const element = document.getElementById("about-pane");
-    if (cur_scroll_val > 100) {
-
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-
-    }
-}
-
 function toggleHeader(scroll_dir, cur_scroll_val) {
     let header = document.getElementById('heading');
     if (scroll_dir === direction.DOWN && cur_scroll_val > 52) {
