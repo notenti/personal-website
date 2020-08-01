@@ -247,3 +247,8 @@ p {
     max-width: 60rem;
   }
 }
+html {
+    visibility: visible;
+    opacity: 1;
+}
+
