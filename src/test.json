@@ -1,0 +1,12 @@
+{
+    "spotify": {
+        "artist": "Young the Giant",
+        "song": "Something to Believe in"
+    },
+    "github": {
+        "repo": "https://github.com/notenti/isolation"
+    },
+    "medium": {
+        "published": "https://medium.com/swlh/gitlab-ci-docker-an-unorthodox-but-hopefully-useful-workflow-29a4149c8acb"
+    }
+}

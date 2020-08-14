@@ -5,7 +5,8 @@ export default {
     entry: './src/index.js',
     plugins: [
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "src", "index.html")
+            template: path.resolve(__dirname, "src", "index.html"),
+            inject: false
         }),
     ],
     module: {
@@ -28,9 +29,7 @@ export default {
             },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/,
-                use: [
-                    'file-loader',
-                ],
+                use: ['file-loader'],
             },
         ],
     },
