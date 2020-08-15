@@ -1,4 +1,5 @@
 import json
+import pathlib
 from typing import Dict
 import github
 import spotify
@@ -50,4 +51,5 @@ def produceActivityFile(filename: str) -> None:
 
 
 if __name__ == '__main__':
-    produceActivityFile(filename='activity.json')
+    script_dir = pathlib.Path(__file__).parent.absolute()
+    produceActivityFile(filename=f'{script_dir}/../src/activity.json')
