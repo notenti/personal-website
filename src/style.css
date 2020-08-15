@@ -9,6 +9,14 @@ a {
     transition: all 0.2s ease;
 }
 
+.activity {
+    color: var(--color-secondary);
+}
+
+.activity:hover {
+    text-decoration: underline;
+}
+
 a:hover,
 a:active {
     color: var(--color-secondary);
@@ -41,4 +49,8 @@ li {
 
 .full-page {
     height: 100vh;
+}
+
+.highlight-activity {
+    color: var(--color-secondary)
 }
