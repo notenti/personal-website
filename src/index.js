@@ -14,13 +14,15 @@ const githubDOM = (github_info) => {
     return github_elem
 }
 
-// const mediumDOM = (medium_info) => {
-//     const medium_elem = `<p class="type-dark">Wrote about <a class='type-dark' href=${medium_info.published}>a weird Docker workflow</a></p>`
+const mediumDOM = (medium_info) => {
+    const medium_elem = `<p class="type-dark"> > Wrote about <a class='activity' href=${medium_info.storu_url}>${medium_info.title}</a></p>`
 
-//     return medium_elem
-// }
+    return medium_elem
+}
 
-const element = document.getElementById("song");
-element.insertAdjacentHTML('afterbegin', spotifyDOM(activity.spotify))
-element.insertAdjacentHTML('afterbegin', githubDOM(activity.github))
-// element.insertAdjacentHTML('afterbegin', mediumDOM(j.medium))
+const left_elem = document.getElementById('left-activity');
+const right_elem = document.getElementById('right-activity')
+
+left_elem.insertAdjacentHTML('afterbegin', spotifyDOM(activity.spotify))
+left_elem.insertAdjacentHTML('afterbegin', githubDOM(activity.github))
+right_elem.insertAdjacentHTML('afterbegin', mediumDOM(activity.medium))

@@ -3,6 +3,7 @@ import pathlib
 from typing import Dict
 import github
 import spotify
+import medium
 
 APIInfo = Dict[str, str]
 
@@ -26,6 +27,19 @@ def gatherGithubActivity() -> APIInfo:
                }
     return curated
 
+def gatherMediumActivity() -> APIInfo:
+    """
+    Return curated activity from Medium.
+    """
+    medium_activity = medium.getMediumActivity('otenti.nate')
+
+    most_recent_story = medium_activity['items'][0]
+
+    curated = {'title': most_recent_story['title'],
+               'story_url': most_recent_story['link']
+               }
+    return curated
+
 
 def gatherSpotifyActivity() -> APIInfo:
     """
@@ -44,7 +58,8 @@ def gatherSpotifyActivity() -> APIInfo:
 
 def produceActivityFile(filename: str) -> None:
     collected_info = {'spotify': gatherSpotifyActivity(),
-                      'github': gatherGithubActivity()}
+                      'github': gatherGithubActivity(),
+                      'medium': gatherMediumActivity()}
 
     with open(filename, 'w') as f:
         json.dump(collected_info, f)
