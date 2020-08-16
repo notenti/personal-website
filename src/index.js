@@ -15,7 +15,7 @@ const githubDOM = (github_info) => {
 }
 
 const mediumDOM = (medium_info) => {
-    const medium_elem = `<p class="type-dark"> > Wrote about <a class='activity' href=${medium_info.storu_url}>${medium_info.title}</a></p>`
+    const medium_elem = `<p class="type-dark"> > Wrote about <a class='activity' href=${medium_info.story_url}>${medium_info.title}</a></p>`
 
     return medium_elem
 }
