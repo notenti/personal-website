@@ -20,10 +20,12 @@ def gatherGithubActivity() -> APIInfo:
         github_activity) if value['type'] in allowable_events)
     latest_event = github_activity[event_idx]
 
+    repo = latest_event['repo']['url'].replace('/repos', '').replace('api.', '')
+
     curated = {'event_type': latest_event['type'],
                'repo_name': latest_event['repo']['name'],
                'num_commits': len(latest_event['payload']['commits']),
-               'url': latest_event['repo']['url']
+               'url': repo
                }
     return curated
 
