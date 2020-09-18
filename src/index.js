@@ -9,7 +9,7 @@ const spotifyDOM = (spotify_info) => {
 }
 
 const githubDOM = (github_info) => {
-    const github_elem = `<p class="type-dark"> > Pushed ${github_info.num_commits} commit to <a class='activity' href=${github_info.url}>${github_info.repo_name}</p>`
+    const github_elem = `<p class="type-dark"> > Pushed ${github_info.num_commits} commit${github_info.num_commits > 1 ? 's' : ''} to <a class='activity' href=${github_info.url}>${github_info.repo_name}</p>`
 
     return github_elem
 }
