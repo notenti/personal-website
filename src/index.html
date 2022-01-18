@@ -4,13 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        html {
-            visibility: hidden;
-            opacity: 0;
-        }
-    </style>
     <title>Nate Otenti | Portfolio</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+    <link rel="stylesheet" href="/assets/simple-grid.css" />
+
     <script src="https://kit.fontawesome.com/5043e82f41.js" crossorigin="anonymous"></script>
 </head>
 
@@ -86,11 +83,17 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-6" id='left-activity'></div>
-                <div class="col-6" id='right-activity'></div>
+                <div class="col-6" id='left-activity'>
+                    <p class="type-dark"> > Pushed {{ .Github.LatestCommitString }} to <a class='activity' href={{ .Github.RepoUrl }}>{{ .Github.RepoName }}</a></p>
+                </div>
+                <div class="col-6" id='left-activity'>
+                    <p class="type-dark"> > Took a <a class='activity' href="https://members.onepeloton.com/members/notenti/overview">{{ .Peloton.RideTitle }}</a> {{ .Peloton.FitnessDiscipline }} class on Peloton
+                </div>
+                <div class="col-6" id='left-activity'>
+                    <p class="type-dark"> > Listened to <a class='activity' href={{ .Spotify.TrackUrl }}>{{ .Spotify.TrackName }}</a> by <a class='activity' href={{ .Spotify.ArtistUrl }}>{{ .Spotify.ArtistName }}</a></p>
+                </div>
         </div>
     </section>
-    <script src="./bundle.js"></script>
 </body>
 
 </html>
