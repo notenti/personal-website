@@ -101,7 +101,7 @@ func indexHandler(api *api.Client) http.HandlerFunc {
 
 func main() {
 
-	if err := godotenv.Load("../.env"); err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Println("Error loading .env file")
 	}
 	port := os.Getenv("PORT")

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type Commit struct {
@@ -79,6 +80,7 @@ func (c *Client) FetchGithub() (*GithubResults, error) {
 
 	for _, res := range *results {
 		if res.Type == "PushEvent" {
+			res.Repo.Url = strings.Replace(strings.Replace(res.Repo.Url, "api.", "", -1), "/repos", "", -1)
 			return &res, nil
 		}
 	}
