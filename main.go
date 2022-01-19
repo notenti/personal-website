@@ -49,13 +49,18 @@ func createCommitString(commits []api.Commit) string {
 	return fmt.Sprintf("%d commits", numCommits)
 }
 
-func indexHandler(api *api.Client) http.HandlerFunc {
+func indexHandler(client *api.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		githubData, err := api.FetchGithub()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		githubCh := make(chan api.GithubResults)
+		peloCh := make(chan api.PelotonRideResults)
+		spotCh := make(chan api.SpotifyLastTrackInfo)
+		go client.FetchGithub(githubCh)
+		go client.FetchSpotify(spotCh)
+		go client.FetchPelo(peloCh)
+
+		githubData := <-githubCh
+		spotData := <-spotCh
+		peloData := <-peloCh
 
 		ghTemplate := GithubTemplateResults{
 			LatestCommitString: createCommitString(githubData.Payload.Commits),
@@ -63,21 +68,12 @@ func indexHandler(api *api.Client) http.HandlerFunc {
 			RepoUrl:            githubData.Repo.Url,
 		}
 
-		peloData, err := api.FetchPelo()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 		peloTemplate := PelotonTemplateResults{
 			RideTitle:         peloData.Ride.Title,
 			FitnessDiscipline: peloData.Ride.FitnessDiscipline,
 			InstructorName:    peloData.Ride.Instructor.Name,
 		}
 
-		spotData, err := api.FetchSpotify()
-		if err != nil {
-			fmt.Println(err)
-		}
 		spotTemplate := SpotifyTemplateResults{
 			ArtistName: spotData.Artist,
 			ArtistUrl:  spotData.ArtistUrl,
@@ -90,6 +86,7 @@ func indexHandler(api *api.Client) http.HandlerFunc {
 			Peloton: peloTemplate,
 			Spotify: spotTemplate,
 		}
+
 		buf := &bytes.Buffer{}
 		if err := tpl.Execute(buf, apiRes); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -110,15 +107,20 @@ func main() {
 	}
 
 	githubUsername := os.Getenv("GITHUB_USERNAME")
-	if githubUsername == "" {
-		log.Fatal("Env: github username must be set")
-	}
-
 	spotifyClientId := os.Getenv("SPOTIFY_CLIENT_ID")
 	spotifySecret := os.Getenv("SPOTIFY_CLIENT_SECRET")
 	spotifyRefresh := os.Getenv("SPOTIFY_REFRESH_TOKEN")
 	peloEmail := os.Getenv("PELOTON_EMAIL")
 	peloPassword := os.Getenv("PELOTON_PASSWORD")
+
+	if len(githubUsername)*
+		len(spotifyClientId)*
+		len(spotifySecret)*
+		len(spotifyRefresh)*
+		len(peloEmail)*
+		len(peloPassword) == 0 {
+		log.Fatal("One or more env vars not set")
+	}
 
 	jar, _ := cookiejar.New(nil)
 	client := &http.Client{Timeout: 10 * time.Second, Jar: jar}

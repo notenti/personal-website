@@ -25,64 +25,38 @@ type GithubResults struct {
 	}
 }
 
-type SpotifyAuth struct {
-	ClientId     string
-	ClientSecret string
-	RefreshToken string
-}
-
-type GithubAuth struct {
-	Username string
-}
-
-type PelotonAuth struct {
-	Email    string
-	Password string
-}
-
-type Client struct {
-	http        *http.Client
-	spotifyAuth SpotifyAuth
-	githubAuth  GithubAuth
-	pelotonAuth PelotonAuth
-}
-
-func NewClient(httpClient *http.Client, spotClient, spotSecret, spotRefresh, githubUsername, peloEmail, peloPassword string) *Client {
-	return &Client{
-		httpClient,
-		SpotifyAuth{ClientId: spotClient, ClientSecret: spotSecret, RefreshToken: spotRefresh},
-		GithubAuth{Username: githubUsername},
-		PelotonAuth{Email: peloEmail, Password: peloPassword},
-	}
-}
-
-func (c *Client) FetchGithub() (*GithubResults, error) {
+func (c *Client) FetchGithub(ch chan<- GithubResults) {
 	endpoint := fmt.Sprintf("https://api.github.com/users/%s/events", c.githubAuth.Username)
 	resp, err := c.http.Get(endpoint)
 	if err != nil {
-		return nil, err
+		ch <- GithubResults{}
+		return
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		ch <- GithubResults{}
+		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(body))
+		ch <- GithubResults{}
+		return
 	}
 
 	results := &[]GithubResults{}
 	if err := json.Unmarshal(body, results); err != nil {
-		return nil, err
+		ch <- GithubResults{}
+		return
 	}
 
 	for _, res := range *results {
 		if res.Type == "PushEvent" {
 			res.Repo.Url = strings.Replace(strings.Replace(res.Repo.Url, "api.", "", -1), "/repos", "", -1)
-			return &res, nil
+			ch <- res
+			return
 		}
 	}
-	return nil, fmt.Errorf("no push events in github history")
+	ch <- GithubResults{}
 }

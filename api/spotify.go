@@ -37,7 +37,7 @@ type SpotifyLastTrackInfo struct {
 	TrackUrl  string
 }
 
-func (c *Client) FetchSpotify() (SpotifyLastTrackInfo, error) {
+func (c *Client) FetchSpotify(ch chan<- SpotifyLastTrackInfo) {
 	v := url.Values{}
 	v.Set("refresh_token", c.spotifyAuth.RefreshToken)
 	v.Set("grant_type", "refresh_token")
@@ -45,49 +45,57 @@ func (c *Client) FetchSpotify() (SpotifyLastTrackInfo, error) {
 	req, err := http.NewRequest("POST", "https://accounts.spotify.com/api/token", strings.NewReader(v.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
-		return SpotifyLastTrackInfo{}, nil
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 
 	req.SetBasicAuth(c.spotifyAuth.ClientId, c.spotifyAuth.ClientSecret)
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return SpotifyLastTrackInfo{}, err
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 	bodyText, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return SpotifyLastTrackInfo{}, nil
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 	accessResp := &SpotifyRefreshResponse{}
 	if err := json.Unmarshal(bodyText, accessResp); err != nil {
-		return SpotifyLastTrackInfo{}, err
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 
 	lastPlayedReq, err := http.NewRequest("GET", "https://api.spotify.com/v1/me/player/recently-played?limit=1", nil)
 	if err != nil {
-		return SpotifyLastTrackInfo{}, err
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 
 	lastPlayedReq.Header.Add("Content-Type", "application/json")
 	lastPlayedReq.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessResp.AccessToken))
 	lastPlayedResp, err := c.http.Do(lastPlayedReq)
 	if err != nil {
-		return SpotifyLastTrackInfo{}, err
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 	lastPlayedText, err := ioutil.ReadAll(lastPlayedResp.Body)
 	if err != nil {
-		return SpotifyLastTrackInfo{}, err
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 
 	recentlyPlayed := &SpotifyRecentlyPlayedResults{}
 	if err := json.Unmarshal(lastPlayedText, recentlyPlayed); err != nil {
-		return SpotifyLastTrackInfo{}, nil
+		ch <- SpotifyLastTrackInfo{}
+		return
 	}
 
 	lastTrack := recentlyPlayed.Items[0]
-	return SpotifyLastTrackInfo{
+	ch <- SpotifyLastTrackInfo{
 		Artist:    lastTrack.Track.Artists[0].Name,
 		ArtistUrl: lastTrack.Track.Artists[0].ExternalUrls.ArtistUrl,
 		Track:     lastTrack.Track.Name,
 		TrackUrl:  lastTrack.Track.ExternalUrls.SongUrl,
-	}, nil
+	}
 }
