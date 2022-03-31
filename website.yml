@@ -1,0 +1,633 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Metadata:
+    Generator: "former2"
+Description: ""
+Resources:
+    S3Bucket:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: "nateotenti.com"
+
+    S3Bucket2:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: !Sub "www.${S3Bucket}"
+            WebsiteConfiguration: 
+                IndexDocument: "index.html"
+
+    S3Bucket3:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: "nateotenti-backend"
+            NotificationConfiguration: 
+                LambdaConfigurations: 
+                  - 
+                    Event: "s3:ObjectCreated:*"
+                    Function: !GetAtt LambdaFunction2.Arn
+            VersioningConfiguration: 
+                Status: "Enabled"
+
+    S3BucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Sub "www.${S3Bucket}"
+            PolicyDocument: 
+                Version: "2012-10-17"
+                Statement: 
+                  - 
+                    Sid: "PublicReadGetObject"
+                    Effect: "Allow"
+                    Principal: "*"
+                    Action: "s3:GetObject"
+                    Resource: !Sub "arn:aws:s3:::www.${S3Bucket}/*"
+
+    DynamoDBTable:
+        Type: "AWS::DynamoDB::Table"
+        Properties:
+            AttributeDefinitions: 
+              - 
+                AttributeName: "id"
+                AttributeType: "S"
+            TableName: "peloton"
+            KeySchema: 
+              - 
+                AttributeName: "id"
+                KeyType: "HASH"
+            ProvisionedThroughput: 
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
+            TimeToLiveSpecification: 
+                Enabled: false
+
+    CloudFrontDistribution:
+        Type: "AWS::CloudFront::Distribution"
+        Properties:
+            DistributionConfig: 
+                Aliases: 
+                  - !Ref S3Bucket
+                Origins: 
+                  - 
+                    ConnectionAttempts: 3
+                    ConnectionTimeout: 10
+                    CustomOriginConfig: 
+                        HTTPPort: 80
+                        HTTPSPort: 443
+                        OriginKeepaliveTimeout: 5
+                        OriginProtocolPolicy: "http-only"
+                        OriginReadTimeout: 30
+                        OriginSSLProtocols: 
+                          - "TLSv1"
+                          - "TLSv1.1"
+                          - "TLSv1.2"
+                    DomainName: !Sub "${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
+                    Id: !Sub "${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
+                    OriginPath: ""
+                OriginGroups: 
+                    Quantity: 0
+                DefaultCacheBehavior: 
+                    AllowedMethods: 
+                      - "HEAD"
+                      - "GET"
+                    CachedMethods: 
+                      - "HEAD"
+                      - "GET"
+                    Compress: true
+                    CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+                    SmoothStreaming: false
+                    TargetOriginId: !Sub "${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
+                    ViewerProtocolPolicy: "redirect-to-https"
+                Comment: ""
+                PriceClass: "PriceClass_All"
+                Enabled: true
+                ViewerCertificate: 
+                    AcmCertificateArn: !Sub "arn:aws:acm:${AWS::Region}:249702126102:certificate/ef8bff68-41eb-45a8-9fe4-66499901557c"
+                    CloudFrontDefaultCertificate: false
+                    MinimumProtocolVersion: "TLSv1.2_2021"
+                    SslSupportMethod: "sni-only"
+                Restrictions: 
+                    GeoRestriction: 
+                        RestrictionType: "none"
+                HttpVersion: "http2"
+                DefaultRootObject: ""
+                IPV6Enabled: true
+
+    CloudFrontDistribution2:
+        Type: "AWS::CloudFront::Distribution"
+        Properties:
+            DistributionConfig: 
+                Aliases: 
+                  - !Sub "www.${S3Bucket}"
+                Origins: 
+                  - 
+                    ConnectionAttempts: 3
+                    ConnectionTimeout: 10
+                    CustomOriginConfig: 
+                        HTTPPort: 80
+                        HTTPSPort: 443
+                        OriginKeepaliveTimeout: 5
+                        OriginProtocolPolicy: "http-only"
+                        OriginReadTimeout: 30
+                        OriginSSLProtocols: 
+                          - "TLSv1"
+                          - "TLSv1.1"
+                          - "TLSv1.2"
+                    DomainName: !Sub "www.${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
+                    Id: !Sub "www.${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
+                    OriginPath: ""
+                OriginGroups: 
+                    Quantity: 0
+                DefaultCacheBehavior: 
+                    AllowedMethods: 
+                      - "HEAD"
+                      - "GET"
+                    CachedMethods: 
+                      - "HEAD"
+                      - "GET"
+                    Compress: true
+                    CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+                    SmoothStreaming: false
+                    TargetOriginId: !Sub "www.${S3Bucket}.s3-website-${AWS::Region}.amazonaws.com"
+                    ViewerProtocolPolicy: "redirect-to-https"
+                Comment: ""
+                PriceClass: "PriceClass_All"
+                Enabled: true
+                ViewerCertificate: 
+                    AcmCertificateArn: !Sub "arn:aws:acm:${AWS::Region}:249702126102:certificate/ef8bff68-41eb-45a8-9fe4-66499901557c"
+                    CloudFrontDefaultCertificate: false
+                    MinimumProtocolVersion: "TLSv1.2_2021"
+                    SslSupportMethod: "sni-only"
+                Restrictions: 
+                    GeoRestriction: 
+                        RestrictionType: "none"
+                HttpVersion: "http2"
+                DefaultRootObject: ""
+                IPV6Enabled: true
+
+    Route53HostedZone:
+        Type: "AWS::Route53::HostedZone"
+        Properties:
+            Name: !Sub "${S3Bucket}."
+
+    Route53RecordSet:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "${S3Bucket}."
+            Type: "A"
+            AliasTarget: 
+                HostedZoneId: "Z2FDTNDATAQYW2"
+                DNSName: !Sub "${CloudFrontDistribution.DomainName}."
+                EvaluateTargetHealth: false
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet2:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "${S3Bucket}."
+            Type: "NS"
+            TTL: 172800
+            ResourceRecords: 
+              - "ns-1570.awsdns-04.co.uk."
+              - "ns-1065.awsdns-05.org."
+              - "ns-763.awsdns-31.net."
+              - "ns-297.awsdns-37.com."
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet3:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "${S3Bucket}."
+            Type: "SOA"
+            TTL: 900
+            ResourceRecords: 
+              - "ns-1570.awsdns-04.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet4:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "_eb2c153edb7407b6ef5afada066afb5a.${S3Bucket}."
+            Type: "CNAME"
+            TTL: 300
+            ResourceRecords: 
+              - "_af8673ff1a58dff428055a40c45d3138.bxmgrlxjqk.acm-validations.aws."
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet5:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "api.${S3Bucket}."
+            Type: "A"
+            AliasTarget: 
+                HostedZoneId: "Z1UJRXOUMOOFQ8"
+                DNSName: !Sub "d-smgqna2hz1.execute-api.${AWS::Region}.amazonaws.com."
+                EvaluateTargetHealth: true
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet6:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "_2d33bac01629079e066b7a65e33a5002.api.${S3Bucket}."
+            Type: "CNAME"
+            TTL: 300
+            ResourceRecords: 
+              - "_7c1d49002096cb8612b78681b5417c75.bxmgrlxjqk.acm-validations.aws."
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet7:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "www.${S3Bucket}."
+            Type: "A"
+            AliasTarget: 
+                HostedZoneId: "Z2FDTNDATAQYW2"
+                DNSName: !Sub "${CloudFrontDistribution2.DomainName}."
+                EvaluateTargetHealth: false
+            HostedZoneId: !Ref Route53HostedZone
+
+    Route53RecordSet8:
+        Type: "AWS::Route53::RecordSet"
+        Properties:
+            Name: !Sub "_97b3dcfb1d44e3c4c6a44d3ad820dc6b.www.${S3Bucket}."
+            Type: "CNAME"
+            TTL: 300
+            ResourceRecords: 
+              - "_0d3584f678e0796e425c3c152b4069cb.bxmgrlxjqk.acm-validations.aws."
+            HostedZoneId: !Ref Route53HostedZone
+
+    ApiGatewayV2Api:
+        Type: "AWS::ApiGatewayV2::Api"
+        Properties:
+            ApiKeySelectionExpression: "$request.header.x-api-key"
+            ProtocolType: "HTTP"
+            RouteSelectionExpression: "$request.method $request.path"
+            DisableExecuteApiEndpoint: false
+
+    ApiGatewayV2Stage:
+        Type: "AWS::ApiGatewayV2::Stage"
+        Properties:
+            StageName: "$default"
+            StageVariables: {}
+            ApiId: !Ref ApiGatewayV2Api
+            DeploymentId: "2d8t5v"
+            RouteSettings: {}
+            DefaultRouteSettings: 
+                DetailedMetricsEnabled: false
+            AutoDeploy: true
+
+    ApiGatewayV2Route:
+        Type: "AWS::ApiGatewayV2::Route"
+        Properties:
+            ApiId: !Ref ApiGatewayV2Api
+            ApiKeyRequired: false
+            AuthorizationType: "NONE"
+            RouteKey: "GET /workout"
+            Target: !Sub "integrations/${ApiGatewayV2Integration}"
+
+    ApiGatewayV2Route2:
+        Type: "AWS::ApiGatewayV2::Route"
+        Properties:
+            ApiId: !Ref ApiGatewayV2Api
+            ApiKeyRequired: false
+            AuthorizationType: "NONE"
+            RouteKey: "GET /commit"
+            Target: !Sub "integrations/${ApiGatewayV2Integration}"
+
+    ApiGatewayV2Route3:
+        Type: "AWS::ApiGatewayV2::Route"
+        Properties:
+            ApiId: !Ref ApiGatewayV2Api
+            ApiKeyRequired: false
+            AuthorizationType: "NONE"
+            RouteKey: "GET /song"
+            Target: !Sub "integrations/${ApiGatewayV2Integration}"
+
+    ApiGatewayV2Integration:
+        Type: "AWS::ApiGatewayV2::Integration"
+        Properties:
+            ApiId: !Ref ApiGatewayV2Api
+            ConnectionType: "INTERNET"
+            IntegrationMethod: "POST"
+            IntegrationType: "AWS_PROXY"
+            IntegrationUri: !GetAtt LambdaFunction.Arn
+            TimeoutInMillis: 30000
+            PayloadFormatVersion: "1.0"
+
+    ApiGatewayV2ApiMapping:
+        Type: "AWS::ApiGatewayV2::ApiMapping"
+        Properties:
+            ApiId: !Ref ApiGatewayV2Api
+            DomainName: !Sub "api.${S3Bucket}"
+            Stage: !Ref ApiGatewayV2Stage
+            ApiMappingKey: ""
+
+    ApiGatewayDomainName:
+        Type: "AWS::ApiGateway::DomainName"
+        Properties:
+            DomainName: !Sub "api.${S3Bucket}"
+            EndpointConfiguration: 
+                Types: 
+                  - "REGIONAL"
+            RegionalCertificateArn: !Sub "arn:aws:acm:${AWS::Region}:249702126102:certificate/45a2da6b-408e-42aa-9fad-32d8a5b6ce5d"
+            SecurityPolicy: "TLS_1_2"
+
+    ApiGatewayV2DomainName:
+        Type: "AWS::ApiGatewayV2::DomainName"
+        Properties:
+            DomainName: !Sub "api.${S3Bucket}"
+            DomainNameConfigurations: 
+              - 
+                CertificateArn: !Sub "arn:aws:acm:${AWS::Region}:249702126102:certificate/45a2da6b-408e-42aa-9fad-32d8a5b6ce5d"
+                EndpointType: "REGIONAL"
+
+    LambdaFunction:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            Environment: 
+                Variables: 
+                    GITHUB_USERNAME: "notenti"
+                    SPOTIFY_REFRESH_TOKEN: "AQBp--Tn4To7t-RiOCwPAISMDWvidsCM8EmTkn23D9WY-kB39XiJ5knHGhSQBP7VOPMlErJYIecEFyXmfgZyaPXBDfIDeAXPMEPbq6EV5HJQNcekUrmvyba1HukTW2l6SVc"
+                    SPOTIFY_CLIENT_SECRET: "9db95731cc42424988fcdd0b15958218"
+                    SPOTIFY_CLIENT_ID: "d8356f56625d4068ac2a3ae5b8ad47ff"
+                    PELOTON_PASSWORD: "Penuche5674!"
+                    PELOTON_EMAIL: "otenti.nate@gmail.com"
+            FunctionName: "DemoAppFunc"
+            Handler: "personal-website"
+            Architectures: 
+              - "x86_64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: "/snapshots/249702126102/DemoAppFunc-c7b73300-9052-4ef9-a768-fbf8528b0eeb"
+                S3ObjectVersion: "Uoc.GbgIprQmNsauCJUrbb5O8fslk2nV"
+            MemorySize: 128
+            Role: !GetAtt IAMRole2.Arn
+            Runtime: "go1.x"
+            Timeout: 3
+            TracingConfig: 
+                Mode: "PassThrough"
+
+    LambdaFunction2:
+        Type: "AWS::Lambda::Function"
+        Properties:
+            Description: ""
+            FunctionName: "AutoBackendUpload"
+            Handler: "index.handler"
+            Architectures: 
+              - "x86_64"
+            Code: 
+                S3Bucket: "prod-04-2014-tasks"
+                S3Key: "/snapshots/249702126102/AutoBackendUpload-faa2895d-404b-4949-8183-ee00d582f7fc"
+                S3ObjectVersion: "ot.W6REj.MKtxcCcrcEqCimMoLMPwQmw"
+            MemorySize: 128
+            Role: !GetAtt IAMRole.Arn
+            Runtime: "nodejs14.x"
+            Timeout: 3
+            TracingConfig: 
+                Mode: "PassThrough"
+
+    IAMUser:
+        Type: "AWS::IAM::User"
+        Properties:
+            Path: "/"
+            UserName: "aws_admin"
+            ManagedPolicyArns: 
+              - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+    IAMRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: "AutoBackendUpload-role-w2t0mrly"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy2
+              - "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
+
+    IAMRole2:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/service-role/"
+            RoleName: "DemoAppFunc-role-pb06itim"
+            AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+            MaxSessionDuration: 3600
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy
+
+    IAMServiceLinkedRole:
+        Type: "AWS::IAM::ServiceLinkedRole"
+        Properties:
+            AWSServiceName: "ops.apigateway.amazonaws.com"
+            Description: "The Service Linked Role is used by Amazon API Gateway."
+
+    IAMServiceLinkedRole2:
+        Type: "AWS::IAM::ServiceLinkedRole"
+        Properties:
+            AWSServiceName: "dynamodb.application-autoscaling.amazonaws.com"
+
+    IAMManagedPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-c6056045-deaf-4b4c-ae60-ff86d2ee9ac1"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:249702126102:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:249702126102:log-group:/aws/lambda/DemoAppFunc:*"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMManagedPolicy2:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: "AWSLambdaBasicExecutionRole-fe241a76-e7d2-40b8-9829-53414839b434"
+            Path: "/service-role/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "logs:CreateLogGroup",
+                            "Resource": "arn:aws:logs:${AWS::Region}:249702126102:*"
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:249702126102:log-group:/aws/lambda/AutoBackendUpload:*"
+                            ]
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:GetObjectVersion",
+                                "s3:ListBucket",
+                                "s3:GetBucketVersioning",
+                                "s3:ListBucketVersions",
+                                "s3:GetObjectTagging",
+                                "s3:PutObjectTagging"],
+                            "Resource": [
+                                "arn:aws:s3:::nateotenti-backend"
+                            ]
+                        }
+                    ]
+                }
+
+    IAMPolicy:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "VisualEditor0",
+                            "Effect": "Allow",
+                            "Action": [
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:ConditionCheckItem",
+                                "dynamodb:DescribeContributorInsights",
+                                "dynamodb:Scan",
+                                "dynamodb:ListTagsOfResource",
+                                "dynamodb:Query",
+                                "dynamodb:DescribeStream",
+                                "dynamodb:DescribeTimeToLive",
+                                "dynamodb:DescribeGlobalTableSettings",
+                                "dynamodb:PartiQLSelect",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:GetShardIterator",
+                                "dynamodb:DescribeGlobalTable",
+                                "dynamodb:GetItem",
+                                "dynamodb:DescribeContinuousBackups",
+                                "dynamodb:DescribeExport",
+                                "dynamodb:DescribeKinesisStreamingDestination",
+                                "dynamodb:DescribeBackup",
+                                "dynamodb:GetRecords",
+                                "dynamodb:DescribeTableReplicaAutoScaling"
+                            ],
+                            "Resource": "arn:aws:dynamodb:*:249702126102:table/*"
+                        },
+                        {
+                            "Sid": "VisualEditor1",
+                            "Effect": "Allow",
+                            "Action": [
+                                "dynamodb:DescribeReservedCapacityOfferings",
+                                "dynamodb:DescribeReservedCapacity",
+                                "dynamodb:DescribeLimits",
+                                "dynamodb:ListStreams"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            Roles: 
+              - !Sub "${LambdaFunction}-role-pb06itim"
+            PolicyName: "DynamoReadPolicy"
+
+    IAMPolicy2:
+        Type: "AWS::IAM::Policy"
+        Properties:
+            PolicyDocument: |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "VisualEditor0",
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:GetObjectVersionTagging",
+                                "s3:GetStorageLensConfigurationTagging",
+                                "s3:GetObjectAcl",
+                                "s3:GetBucketObjectLockConfiguration",
+                                "s3:GetIntelligentTieringConfiguration",
+                                "s3:GetObjectVersionAcl",
+                                "s3:GetBucketPolicyStatus",
+                                "s3:GetObjectRetention",
+                                "s3:GetBucketWebsite",
+                                "s3:GetJobTagging",
+                                "s3:GetMultiRegionAccessPoint",
+                                "s3:GetObjectAttributes",
+                                "s3:GetObjectLegalHold",
+                                "s3:GetBucketNotification",
+                                "s3:DescribeMultiRegionAccessPointOperation",
+                                "s3:GetReplicationConfiguration",
+                                "s3:GetObject",
+                                "s3:DescribeJob",
+                                "s3:GetAnalyticsConfiguration",
+                                "s3:GetObjectVersionForReplication",
+                                "s3:GetAccessPointForObjectLambda",
+                                "s3:GetStorageLensDashboard",
+                                "s3:GetLifecycleConfiguration",
+                                "s3:GetAccessPoint",
+                                "s3:GetInventoryConfiguration",
+                                "s3:GetBucketTagging",
+                                "s3:GetAccessPointPolicyForObjectLambda",
+                                "s3:GetBucketLogging",
+                                "s3:GetAccelerateConfiguration",
+                                "s3:GetObjectVersionAttributes",
+                                "s3:GetBucketPolicy",
+                                "s3:GetEncryptionConfiguration",
+                                "s3:GetObjectVersionTorrent",
+                                "s3:GetBucketRequestPayment",
+                                "s3:GetAccessPointPolicyStatus",
+                                "s3:GetObjectTagging",
+                                "s3:GetMetricsConfiguration",
+                                "s3:GetBucketOwnershipControls",
+                                "s3:GetBucketPublicAccessBlock",
+                                "s3:GetMultiRegionAccessPointPolicyStatus",
+                                "s3:GetMultiRegionAccessPointPolicy",
+                                "s3:GetAccessPointPolicyStatusForObjectLambda",
+                                "s3:GetBucketVersioning",
+                                "s3:GetBucketAcl",
+                                "s3:GetAccessPointConfigurationForObjectLambda",
+                                "s3:GetObjectTorrent",
+                                "s3:GetStorageLensConfiguration",
+                                "s3:GetAccountPublicAccessBlock",
+                                "s3:GetBucketCORS",
+                                "s3:GetBucketLocation",
+                                "s3:GetAccessPointPolicy",
+                                "s3:GetObjectVersion"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            Roles: 
+              - !Sub "${LambdaFunction2}-role-w2t0mrly"
+            PolicyName: "S3ReadPolicy"
+
+    ApplicationAutoScalingScalableTarget:
+        Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+        Properties:
+            MaxCapacity: 10
+            MinCapacity: 1
+            ResourceId: !Sub "table/${DynamoDBTable}"
+            RoleARN: "arn:aws:iam::249702126102:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+            ScalableDimension: "dynamodb:table:ReadCapacityUnits"
+            ServiceNamespace: "dynamodb"
+            SuspendedState: 
+                DynamicScalingInSuspended: false
+                DynamicScalingOutSuspended: false
+                ScheduledScalingSuspended: false
+
