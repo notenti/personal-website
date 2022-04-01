@@ -5,14 +5,22 @@ import {
   aws_lambda as lambda,
   aws_events as events,
   aws_events_targets as targets,
-  aws_iam as iam,
+  aws_route53 as route53,
   aws_dynamodb as dynamodb,
+  aws_certificatemanager as acm,
+  aws_cloudfront as cloudfront,
+  aws_s3 as s3,
+  aws_s3_deployment as s3deploy,
+  aws_route53_targets as route53targets,
   Duration,
 } from "aws-cdk-lib";
 
 import * as dotenv from "dotenv";
 
 import * as pyLambda from "@aws-cdk/aws-lambda-python-alpha";
+import * as goLambda from "@aws-cdk/aws-lambda-go-alpha";
+import * as apigw2 from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
 import { Construct } from "constructs";
 import * as path from "path";
@@ -22,6 +30,16 @@ export class CdkStack extends Stack {
     super(scope, id, props);
 
     dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
+
+    const populateFuncDir = path.join(__dirname, "..", "..", "populate");
+    const backendFuncDir = path.join(__dirname, "..", "..", "backend");
+    const frontendBuildDir = path.join(
+      __dirname,
+      "..",
+      "..",
+      "frontend",
+      "build"
+    );
 
     const spotifyTable = new dynamodb.Table(this, "spotifyTable", {
       tableName: "spotify",
@@ -52,18 +70,15 @@ export class CdkStack extends Stack {
       sortKey: { name: "timestamp", type: dynamodb.AttributeType.NUMBER },
       projectionType: dynamodb.ProjectionType.ALL,
     });
-
-    const funcDir = path.join(__dirname, "..", "..", "populate");
-
-    const lambdaFunc = new pyLambda.PythonFunction(this, "lambdaFunction", {
-      entry: funcDir,
+    const populateLambda = new pyLambda.PythonFunction(this, "PopulateLambda", {
+      entry: populateFuncDir,
       runtime: lambda.Runtime.PYTHON_3_7,
       index: "index.py",
       handler: "handler",
       timeout: Duration.seconds(45),
       layers: [
-        new pyLambda.PythonLayerVersion(this, "PythonLayerNate", {
-          entry: funcDir,
+        new pyLambda.PythonLayerVersion(this, "PopulateLambdaLayer", {
+          entry: populateFuncDir,
         }),
       ],
       environment: {
@@ -81,14 +96,145 @@ export class CdkStack extends Stack {
     });
 
     eventRule.addTarget(
-      new targets.LambdaFunction(lambdaFunc, {
+      new targets.LambdaFunction(populateLambda, {
         event: events.RuleTargetInput.fromObject({ message: "Hello Lambda" }),
       })
     );
 
-    targets.addLambdaPermission(eventRule, lambdaFunc);
+    targets.addLambdaPermission(eventRule, populateLambda);
 
-    spotifyTable.grantWriteData(lambdaFunc);
-    pelotonTable.grantWriteData(lambdaFunc);
+    const backendLambda = new goLambda.GoFunction(this, "BackendLambda", {
+      entry: backendFuncDir,
+      runtime: lambda.Runtime.GO_1_X,
+    });
+
+    spotifyTable.grantWriteData(populateLambda);
+    spotifyTable.grantReadData(backendLambda);
+    pelotonTable.grantWriteData(populateLambda);
+    pelotonTable.grantReadData(backendLambda);
+
+    const frontendBucket = new s3.Bucket(this, "WebsiteFrontend", {
+      websiteIndexDocument: "index.html",
+      publicReadAccess: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    const bucketDeployment = new s3deploy.BucketDeployment(
+      this,
+      "DeployWebsiteFrontend",
+      {
+        sources: [s3deploy.Source.asset(frontendBuildDir)],
+        destinationBucket: frontendBucket,
+      }
+    );
+
+    bucketDeployment.node.addDependency(frontendBucket);
+
+    const hostedZone = route53.HostedZone.fromLookup(
+      this,
+      "WebsiteHostedZone",
+      {
+        domainName: "nateotenti.com",
+      }
+    );
+
+    const frontendCertificate = new acm.DnsValidatedCertificate(
+      this,
+      "WebsiteFrontendCertificate",
+      {
+        domainName: "www.nateotenti.com",
+        hostedZone: hostedZone,
+        region: "us-east-1",
+      }
+    );
+
+    const apiCertificate = new acm.DnsValidatedCertificate(
+      this,
+      "WebsiteApiCertificate",
+      {
+        domainName: "api.nateotenti.com",
+        hostedZone: hostedZone,
+      }
+    );
+
+    const domain = new apigw2.DomainName(this, "WebsiteDomainName", {
+      domainName: "api.nateotenti.com",
+      certificate: apiCertificate,
+      securityPolicy: apigw2.SecurityPolicy.TLS_1_2,
+    });
+
+    const httpApi = new apigw2.HttpApi(this, "WebsiteApiGateway", {
+      apiName: "WebsiteApi",
+
+      defaultDomainMapping: {
+        domainName: domain,
+      },
+    });
+
+    httpApi.addRoutes({
+      path: "/songs",
+      methods: [apigw2.HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "BackendIntegration",
+        backendLambda,
+        {
+          payloadFormatVersion: apigw2.PayloadFormatVersion.VERSION_1_0,
+        }
+      ),
+    });
+    httpApi.addRoutes({
+      path: "/workouts",
+      methods: [apigw2.HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "BackendIntegration",
+        backendLambda,
+        {
+          payloadFormatVersion: apigw2.PayloadFormatVersion.VERSION_1_0,
+        }
+      ),
+    });
+
+    const distribution = new cloudfront.CloudFrontWebDistribution(
+      this,
+      "WebsiteDistribution",
+      {
+        originConfigs: [
+          {
+            s3OriginSource: {
+              s3BucketSource: frontendBucket,
+            },
+            behaviors: [{ isDefaultBehavior: true }],
+          },
+        ],
+        viewerCertificate: {
+          aliases: ["www.nateotenti.com"],
+          props: {
+            acmCertificateArn: frontendCertificate.certificateArn,
+            sslSupportMethod: "sni-only",
+            minimumProtocolVersion: "TLSv1.2_2021",
+          },
+        },
+      }
+    );
+
+    const websiteARecord = new route53.ARecord(this, "WebsiteFrontendRecord", {
+      recordName: "www.nateotenti.com",
+      zone: hostedZone,
+      target: route53.RecordTarget.fromAlias(
+        new route53targets.CloudFrontTarget(distribution)
+      ),
+    });
+
+    const apiRecord = new route53.ARecord(this, "WebsiteAPIRecord", {
+      recordName: "api",
+      zone: hostedZone,
+      target: route53.RecordTarget.fromAlias(
+        new route53targets.ApiGatewayv2DomainProperties(
+          domain.regionalDomainName,
+          domain.regionalHostedZoneId
+        )
+      ),
+    });
   }
 }

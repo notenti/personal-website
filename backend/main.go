@@ -28,8 +28,8 @@ func init() {
 
 	r := gin.Default()
 
-	r.GET("/workout", controller.WorkoutController(svc))
-	r.GET("/song", controller.SongController(svc))
+	r.GET("/workouts", controller.WorkoutController(svc))
+	r.GET("/songs", controller.SongController(svc))
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
