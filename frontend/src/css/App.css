@@ -1,0 +1,87 @@
+:root {
+  --color-secondary: #498467;
+  --color-secondary-light: #88bfa5;
+  --color-secondary-mid: #396a53;
+  --color-secondary-dark: #2b4f3e;
+  --color-background: #feffd6;
+}
+
+a {
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:link,
+a:visited {
+  color: #592941;
+}
+
+a:hover,
+a:active {
+  color: var(--color-secondary-light);
+}
+
+.app__container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  background-color: var(--color-background);
+}
+.app__content {
+  display: flex;
+  margin: 6% 0%;
+  padding: 1% 3%;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.content__header {
+  font-size: 1.8rem;
+  color: var(--color-secondary-mid);
+  display: flex;
+}
+
+.content__subheader {
+  font-size: 1.5rem;
+  color: var(--color-secondary-mid);
+}
+
+.content__desc {
+  color: var(--color-secondary-mid);
+  display: flex;
+}
+
+.content__social__links {
+  display: flex;
+  list-style-type: none;
+  padding: 20px 0px;
+  justify-content: space-between;
+}
+
+.project__container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.content__project {
+  padding: 10px 25px;
+  border: 2px solid var(--color-secondary);
+}
+
+.content__project a:link,
+.content__project a:visited {
+  color: var(--color-secondary-mid);
+}
+
+.content__project a:hover,
+.content__project a:active {
+  color: var(--color-secondary-light);
+}
+
+.activity__container {
+  color: var(--color-secondary-mid);
+  display: flex;
+  width: 100%;
+}
