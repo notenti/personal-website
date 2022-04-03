@@ -181,8 +181,8 @@ export class CdkStack extends Stack {
           apigw2.CorsHttpMethod.PATCH,
           apigw2.CorsHttpMethod.DELETE,
         ],
-        allowCredentials: true, 
-        allowOrigins: ['http://localhost:3000'],
+        allowCredentials: true,
+        allowOrigins: ["http://localhost:3000", "https://www.nateotenti.com"],
       },
       defaultDomainMapping: {
         domainName: domain,
