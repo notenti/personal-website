@@ -85,3 +85,43 @@ a:active {
   display: flex;
   width: 100%;
 }
+
+@media screen and (max-width: 800px) {
+  .app__container {
+    height: 100%;
+  }
+  
+  .app__content {
+    padding: 1% 5%;
+  }
+
+  .content__header {
+    font-size: 0.9rem;
+  }
+
+  .content__subheader {
+    font-size: 1rem;
+  }
+
+  .project__container {
+    flex-direction: column;
+  }
+
+  .activity__container {
+    flex-direction: column;
+  }
+
+  .content__project {
+    margin: 2% 0%;
+  }
+
+  .content__social__links {
+    font-size: 1rem;
+    padding: 20px 0px;
+    justify-content: flex-start;
+  }
+
+  .social {
+    padding-right: 3%;
+  }
+}

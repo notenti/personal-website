@@ -10,9 +10,11 @@ const generateSocialLinks = (mapping) => {
   return (
     <div className="content__social__links one-third column">
       {mapping.map((social) => (
-        <li key={social.platform}>
-          <a href={social.link}>{social.platform}</a>
-        </li>
+        <div key={social.platform} className="social">
+          <li>
+            <a href={social.link}>{social.platform}</a>
+          </li>
+        </div>
       ))}
     </div>
   );
