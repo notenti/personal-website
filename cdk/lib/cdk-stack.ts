@@ -166,7 +166,24 @@ export class CdkStack extends Stack {
 
     const httpApi = new apigw2.HttpApi(this, "WebsiteApiGateway", {
       apiName: "WebsiteApi",
-
+      corsPreflight: {
+        allowHeaders: [
+          "Content-Type",
+          "X-Amz-Date",
+          "Authorization",
+          "X-Api-Key",
+        ],
+        allowMethods: [
+          apigw2.CorsHttpMethod.OPTIONS,
+          apigw2.CorsHttpMethod.GET,
+          apigw2.CorsHttpMethod.POST,
+          apigw2.CorsHttpMethod.PUT,
+          apigw2.CorsHttpMethod.PATCH,
+          apigw2.CorsHttpMethod.DELETE,
+        ],
+        allowCredentials: true, 
+        allowOrigins: ['http://localhost:3000'],
+      },
       defaultDomainMapping: {
         domainName: domain,
       },
