@@ -5,6 +5,7 @@ import Song from "./components/Song";
 import useFetch from "react-fetch-hook";
 import Workout from "./components/Workout";
 import Project from "./components/Project";
+import LoadingSpinner from "./components/Spinner";
 
 const generateSocialLinks = (mapping) => {
   return (
@@ -61,45 +62,53 @@ const App = () => {
     },
   ];
 
-  return (
-    <div className="app__container">
-      <div className="app__content two-thirds column">
-        <div className="content__header">
-          <h1>
-            Hi, I'm Nate.
-            <br />
-            I'm a software engineer.
-          </h1>
+  const renderContent = (
+    <div className="app__content two-thirds column">
+      <div className="content__header">
+        <h1>
+          Hi, I'm Nate.
+          <br />
+          I'm a software engineer.
+        </h1>
+      </div>
+      <div className="content__desc one-half column">
+        <p>
+          Passionate about writing expressive, maintainable code, learning about
+          DevOps, trying out new programming languages, and watching Survivor.
+          Software engineer at <a href="https://motional.com/">Motional</a>.
+          Boston, MA.
+        </p>
+      </div>
+      {generateSocialLinks(socialPlatforms)}
+      <div className="content__subheader">
+        <h3>Projects</h3>
+      </div>
+      {generateProjects(projects)}
+      <div className="content__subheader">
+        <h3>Nate recently...</h3>
+      </div>
+      <div className="activity__container">
+        <div className="one-half column">
+          {songResp.data && (
+            <Song key="test" songDesc={songResp.data[0]}></Song>
+          )}
         </div>
-        <div className="content__desc one-half column">
-          <p>
-            Passionate about writing expressive, maintainable code, learning
-            about DevOps, trying out new programming languages, and watching
-            Survivor. Software engineer at{" "}
-            <a href="https://motional.com/">Motional</a>. Boston, MA.
-          </p>
-        </div>
-        {generateSocialLinks(socialPlatforms)}
-        <div className="content__subheader">
-          <h3>Projects</h3>
-        </div>
-        {generateProjects(projects)}
-        <div className="content__subheader">
-          <h3>Nate recently...</h3>
-        </div>
-        <div className="activity__container">
-          <div className="one-half column">
-            {songResp.data && (
-              <Song key="test" songDesc={songResp.data[0]}></Song>
-            )}
-          </div>
-          <div className="one-half column">
-            {workoutResp.data && (
-              <Workout key="sdf" workoutDesc={workoutResp.data[0]}></Workout>
-            )}
-          </div>
+        <div className="one-half column">
+          {workoutResp.data && (
+            <Workout key="sdf" workoutDesc={workoutResp.data[0]}></Workout>
+          )}
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="app__container">
+      {songResp.isLoading || workoutResp.isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        renderContent
+      )}
     </div>
   );
 };

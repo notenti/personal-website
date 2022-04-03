@@ -6,6 +6,10 @@
   --color-background: #feffd6;
 }
 
+body {
+  background-color: var(--color-background);
+}
+
 a {
   text-decoration: none;
   transition: all 0.2s ease;
@@ -26,7 +30,6 @@ a:active {
   width: 100vw;
   display: flex;
   justify-content: center;
-  background-color: var(--color-background);
 }
 .app__content {
   display: flex;
@@ -87,10 +90,6 @@ a:active {
 }
 
 @media screen and (max-width: 850px) {
-  .app__container {
-    height: 100%;
-  }
-
   .app__content {
     padding: 1% 5%;
   }
