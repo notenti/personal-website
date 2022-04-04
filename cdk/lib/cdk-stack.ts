@@ -71,18 +71,6 @@ export class CdkStack extends Stack {
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
-    const employmentTable = new dynamodb.Table(this, "EmploymentTable", {
-      tableName: "employment",
-      readCapacity: 1,
-      writeCapacity: 1,
-      removalPolicy: RemovalPolicy.DESTROY,
-      partitionKey: {
-        name: "company",
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: { name: "start_date", type: dynamodb.AttributeType.NUMBER },
-    });
-
     const populateLambda = new pyLambda.PythonFunction(this, "PopulateLambda", {
       entry: lambdaFuncDir,
       runtime: lambda.Runtime.PYTHON_3_7,
@@ -125,7 +113,6 @@ export class CdkStack extends Stack {
     spotifyTable.grantReadData(backendLambda);
     pelotonTable.grantWriteData(populateLambda);
     pelotonTable.grantReadData(backendLambda);
-    employmentTable.grantReadData(backendLambda);
 
     const frontendBucket = new s3.Bucket(this, "WebsiteFrontend", {
       websiteIndexDocument: "index.html",
@@ -216,17 +203,6 @@ export class CdkStack extends Stack {
     });
     httpApi.addRoutes({
       path: "/workouts",
-      methods: [apigw2.HttpMethod.GET],
-      integration: new HttpLambdaIntegration(
-        "BackendIntegration",
-        backendLambda,
-        {
-          payloadFormatVersion: apigw2.PayloadFormatVersion.VERSION_1_0,
-        }
-      ),
-    });
-    httpApi.addRoutes({
-      path: "/jobs",
       methods: [apigw2.HttpMethod.GET],
       integration: new HttpLambdaIntegration(
         "BackendIntegration",
