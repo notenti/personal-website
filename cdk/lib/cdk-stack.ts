@@ -31,7 +31,7 @@ export class CdkStack extends Stack {
 
     dotenv.config({ path: path.join(__dirname, "..", "..", ".env") });
 
-    const populateFuncDir = path.join(__dirname, "..", "..", "populate");
+    const lambdaFuncDir = path.join(__dirname, "..", "..", "lambda");
     const backendFuncDir = path.join(__dirname, "..", "..", "backend");
     const frontendBuildDir = path.join(
       __dirname,
@@ -70,15 +70,28 @@ export class CdkStack extends Stack {
       sortKey: { name: "timestamp", type: dynamodb.AttributeType.NUMBER },
       projectionType: dynamodb.ProjectionType.ALL,
     });
+
+    const employmentTable = new dynamodb.Table(this, "EmploymentTable", {
+      tableName: "employment",
+      readCapacity: 1,
+      writeCapacity: 1,
+      removalPolicy: RemovalPolicy.DESTROY,
+      partitionKey: {
+        name: "company",
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: { name: "start_date", type: dynamodb.AttributeType.NUMBER },
+    });
+
     const populateLambda = new pyLambda.PythonFunction(this, "PopulateLambda", {
-      entry: populateFuncDir,
+      entry: lambdaFuncDir,
       runtime: lambda.Runtime.PYTHON_3_7,
       index: "index.py",
       handler: "handler",
       timeout: Duration.seconds(45),
       layers: [
         new pyLambda.PythonLayerVersion(this, "PopulateLambdaLayer", {
-          entry: populateFuncDir,
+          entry: lambdaFuncDir,
         }),
       ],
       environment: {
@@ -91,17 +104,17 @@ export class CdkStack extends Stack {
       },
     });
 
-    const eventRule = new events.Rule(this, "hourRule", {
+    const everyHourRule = new events.Rule(this, "hourRule", {
       schedule: events.Schedule.cron({ minute: "0" }),
     });
 
-    eventRule.addTarget(
+    everyHourRule.addTarget(
       new targets.LambdaFunction(populateLambda, {
         event: events.RuleTargetInput.fromObject({ message: "Hello Lambda" }),
       })
     );
 
-    targets.addLambdaPermission(eventRule, populateLambda);
+    targets.addLambdaPermission(everyHourRule, populateLambda);
 
     const backendLambda = new goLambda.GoFunction(this, "BackendLambda", {
       entry: backendFuncDir,
@@ -112,6 +125,7 @@ export class CdkStack extends Stack {
     spotifyTable.grantReadData(backendLambda);
     pelotonTable.grantWriteData(populateLambda);
     pelotonTable.grantReadData(backendLambda);
+    employmentTable.grantReadData(backendLambda);
 
     const frontendBucket = new s3.Bucket(this, "WebsiteFrontend", {
       websiteIndexDocument: "index.html",
@@ -202,6 +216,17 @@ export class CdkStack extends Stack {
     });
     httpApi.addRoutes({
       path: "/workouts",
+      methods: [apigw2.HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "BackendIntegration",
+        backendLambda,
+        {
+          payloadFormatVersion: apigw2.PayloadFormatVersion.VERSION_1_0,
+        }
+      ),
+    });
+    httpApi.addRoutes({
+      path: "/jobs",
       methods: [apigw2.HttpMethod.GET],
       integration: new HttpLambdaIntegration(
         "BackendIntegration",
