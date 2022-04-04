@@ -6,6 +6,7 @@ import useFetch from "react-fetch-hook";
 import Workout from "./components/Workout";
 import Project from "./components/Project";
 import LoadingSpinner from "./components/Spinner";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 const generateSocialLinks = (mapping) => {
   return (
@@ -13,7 +14,11 @@ const generateSocialLinks = (mapping) => {
       {mapping.map((social) => (
         <div key={social.platform} className="social">
           <li>
-            <a href={social.link}>{social.platform}</a>
+            {social.link.startsWith("https://") ? (
+              <a href={social.link}>{social.platform}</a>
+            ) : (
+              <Link to={social.link}>{social.platform}</Link>
+            )}
           </li>
         </div>
       ))}
@@ -31,17 +36,30 @@ const generateProjects = (mapping) => {
   );
 };
 
-const App = () => {
+export default function App() {
+  return (
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/resume" element={<Resume />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+function Home() {
   const songResp = useFetch("https://api.nateotenti.com/songs?limit=1");
   const workoutResp = useFetch("https://api.nateotenti.com/workouts?limit=1");
 
-  const socialPlatforms = [
+  const redirects = [
     {
       platform: "LinkedIn",
       link: "https://www.linkedin.com/in/nathan-otenti/",
     },
     { platform: "Github", link: "https://github.com/notenti" },
-    { platform: "Medium", link: "https://medium.com/@otenti.nate" },
+    { platform: "Résumé", link: "/resume" },
   ];
 
   const projects = [
@@ -79,7 +97,7 @@ const App = () => {
           Boston, MA.
         </p>
       </div>
-      {generateSocialLinks(socialPlatforms)}
+      {generateSocialLinks(redirects)}
       <div className="content__subheader">
         <h3>Projects</h3>
       </div>
@@ -111,6 +129,12 @@ const App = () => {
       )}
     </div>
   );
-};
+}
 
-export default App;
+function Resume() {
+  return (
+    <div>
+      <h1>Resume</h1>
+    </div>
+  );
+}
