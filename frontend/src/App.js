@@ -1,6 +1,6 @@
 import "./css/App.css";
 import "./css/base.css";
-import React from "react";
+import { React, useEffect } from "react";
 import Song from "./components/Song";
 import useFetch from "react-fetch-hook";
 import Workout from "./components/Workout";
@@ -36,6 +36,17 @@ const generateProjects = (mapping) => {
   );
 };
 
+const useTitle = (title) => {
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = title;
+
+    return () => {
+      document.title = prevTitle;
+    };
+  }, []);
+};
+
 export default function App() {
   return (
     <Router>
@@ -50,6 +61,7 @@ export default function App() {
 }
 
 function Home() {
+  useTitle("Nate Otenti");
   const songResp = useFetch("https://api.nateotenti.com/songs?limit=1");
   const workoutResp = useFetch("https://api.nateotenti.com/workouts?limit=1");
 
@@ -59,7 +71,7 @@ function Home() {
       link: "https://www.linkedin.com/in/nathan-otenti/",
     },
     { platform: "Github", link: "https://github.com/notenti" },
-    { platform: "Résumé", link: "/resume" },
+    { platform: "Resume", link: "/resume" },
   ];
 
   const projects = [
@@ -132,6 +144,7 @@ function Home() {
 }
 
 function Resume() {
+  useTitle("Resume");
   return (
     <div>
       <h1>Resume</h1>
