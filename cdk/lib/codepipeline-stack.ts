@@ -15,12 +15,14 @@ export class CodePipelineStack extends Stack {
       synth: new ShellStep("Synth", {
         input: CodePipelineSource.gitHub("notenti/personal-website", "master"),
         commands: [
+          "folder=$(ls)",
+          "cd ${folder}/cdk",
           "npm ci",
-          "npm run build",
+          "mkdir -p /tmp/cdk.out/",
           "pushd ../frontend",
           "npm run build",
           "popd",
-          "npx cdk synth",
+          "npx cdk synth -o /tmp/cdk.out",
         ],
       }),
     });
