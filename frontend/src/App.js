@@ -10,7 +10,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 const generateSocialLinks = (mapping) => {
   return (
-    <div className="content__social__links one-third column">
+    <div className="content__social__links three columns">
       {mapping.map((social) => (
         <div key={social.platform} className="social">
           <li>
@@ -53,7 +53,6 @@ export default function App() {
       <div>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/resume" element={<Resume />} />
         </Routes>
       </div>
     </Router>
@@ -71,7 +70,6 @@ function Home() {
       link: "https://www.linkedin.com/in/nathan-otenti/",
     },
     { platform: "Github", link: "https://github.com/notenti" },
-    { platform: "Resume", link: "/resume" },
   ];
 
   const projects = [
@@ -139,15 +137,6 @@ function Home() {
       ) : (
         renderContent
       )}
-    </div>
-  );
-}
-
-function Resume() {
-  useTitle("Resume");
-  return (
-    <div>
-      <h1>Resume</h1>
     </div>
   );
 }

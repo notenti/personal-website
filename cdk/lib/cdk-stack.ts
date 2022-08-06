@@ -96,11 +96,7 @@ export class CdkStack extends Stack {
       schedule: events.Schedule.cron({ minute: "0" }),
     });
 
-    everyHourRule.addTarget(
-      new targets.LambdaFunction(populateLambda, {
-        event: events.RuleTargetInput.fromObject({ message: "Hello Lambda" }),
-      })
-    );
+    everyHourRule.addTarget(new targets.LambdaFunction(populateLambda));
 
     targets.addLambdaPermission(everyHourRule, populateLambda);
 
