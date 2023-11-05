@@ -103,7 +103,7 @@ function Home() {
         <p>
           Passionate about writing expressive, maintainable code, learning about
           DevOps, trying out new programming languages, and watching Survivor.
-          Software engineer at <a href="https://motional.com/">Motional</a>.
+          Software engineer at <a href="https://block.xyz/">Block</a>.
           Boston, MA.
         </p>
       </div>
