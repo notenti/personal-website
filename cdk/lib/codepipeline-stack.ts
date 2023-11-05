@@ -4,7 +4,6 @@ import {
   CodePipelineSource,
   ShellStep,
 } from "aws-cdk-lib/pipelines";
-import { BuildSpec } from "aws-cdk-lib/aws-codebuild";
 import { Construct } from "constructs";
 
 export class CodePipelineStack extends Stack {
@@ -15,6 +14,7 @@ export class CodePipelineStack extends Stack {
       pipelineName: "WebsitePipeline",
       synth: new ShellStep("Synth", {
         input: CodePipelineSource.gitHub("notenti/personal-website", "master"),
+        installCommands: ['npm i -g npm@latest'],
         commands: [
           "folder=$(ls)",
           "cd ${folder}/cdk",
@@ -26,17 +26,6 @@ export class CodePipelineStack extends Stack {
           "npx cdk synth -o /tmp/cdk.out",
         ],
       }),
-      synthCodeBuildDefaults: {
-        partialBuildSpec: BuildSpec.fromObject({
-            phases: {
-                install: {
-                    "runtime-versions": {
-                        nodejs: "18"
-                    }
-                }
-            }
-        })
-    }
     });
   }
 }
