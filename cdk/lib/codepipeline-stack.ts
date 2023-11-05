@@ -13,7 +13,7 @@ export class CodePipelineStack extends Stack {
     new CodePipeline(this, "Pipeline", {
       pipelineName: "WebsitePipeline",
       synth: new ShellStep("Synth", {
-        input: CodePipelineSource.gitHub("notenti/personal-website", "master"),
+        input: CodePipelineSource.gitHub("notenti/personal-website", "notenti/job-update"),
         commands: [
           "folder=$(ls)",
           "cd ${folder}/cdk",
