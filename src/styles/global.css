@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    background-color: #ffffff;
+    background-image: radial-gradient(#d6d3d1 1px, transparent 1px);
+    background-size: 32px 32px;
+    @apply text-stone-700;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .prose {
+    @apply max-w-none;
+  }
+
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose h1 {
+    @apply text-3xl font-semibold mb-6 text-stone-900;
+  }
+
+  .prose h2 {
+    @apply text-2xl font-semibold mb-4 mt-8 text-stone-900;
+  }
+
+  .prose h3 {
+    @apply text-xl font-medium mb-3 mt-6 text-stone-900;
+  }
+
+  .prose img {
+    @apply rounded-lg my-6 max-w-2xl mx-auto block cursor-zoom-in hover:opacity-95 transition-opacity;
+  }
+
+  .prose ul {
+    @apply list-disc list-inside mb-4 space-y-1;
+  }
+
+  .prose ol {
+    @apply list-decimal list-inside mb-4 space-y-1;
+  }
+}
