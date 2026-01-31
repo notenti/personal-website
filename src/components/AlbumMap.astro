@@ -1,0 +1,84 @@
+---
+interface Props {
+  images: Array<{
+    src: string;
+    place?: string;
+    lat?: number;
+    lng?: number;
+  }>;
+}
+
+const { images } = Astro.props;
+
+// Filter to only geotagged images
+const geotaggedImages = images.filter(img => img.lat !== undefined && img.lng !== undefined);
+
+// Don't render if no geotagged images
+if (geotaggedImages.length === 0) {
+  return;
+}
+---
+
+<section class="mt-12">
+  <h2 class="text-lg font-medium text-stone-800 mb-4">Where</h2>
+  <div id="album-map" class="w-full h-64 md:h-80 rounded-lg overflow-hidden" data-images={JSON.stringify(geotaggedImages)}></div>
+</section>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  declare const L: any;
+
+  const mapElement = document.getElementById('album-map');
+  if (mapElement) {
+    const images = JSON.parse(mapElement.dataset.images || '[]');
+
+    if (images.length > 0) {
+      // Calculate bounds
+      const lats = images.map((img: any) => img.lat);
+      const lngs = images.map((img: any) => img.lng);
+      const minLat = Math.min(...lats);
+      const maxLat = Math.max(...lats);
+      const minLng = Math.min(...lngs);
+      const maxLng = Math.max(...lngs);
+
+      // Create map
+      const map = L.map('album-map', {
+        scrollWheelZoom: false
+      });
+
+      // Add tile layer (OpenStreetMap)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+      }).addTo(map);
+
+      // Add markers
+      images.forEach((img: any) => {
+        const marker = L.marker([img.lat, img.lng]).addTo(map);
+        if (img.place) {
+          marker.bindPopup(`<b>${img.place}</b><br><img src="${img.src}" style="max-width:150px;max-height:100px;object-fit:cover;border-radius:4px;margin-top:4px;">`);
+        }
+      });
+
+      // Fit bounds with padding
+      if (images.length === 1) {
+        map.setView([images[0].lat, images[0].lng], 10);
+      } else {
+        map.fitBounds([[minLat, minLng], [maxLat, maxLng]], { padding: [30, 30] });
+      }
+    }
+  }
+</script>
+
+<style>
+  /* Override Leaflet styles for better integration */
+  :global(.leaflet-popup-content-wrapper) {
+    border-radius: 8px;
+  }
+  :global(.leaflet-popup-content) {
+    margin: 8px 12px;
+    font-size: 13px;
+  }
+</style>
