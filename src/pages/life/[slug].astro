@@ -16,12 +16,10 @@ const { Content } = await album.render();
 
 <AlbumLayout
   title={album.data.title}
-  description={album.data.description}
   date={album.data.date}
   cover={album.data.cover}
   location={album.data.location}
-  blurb={album.data.blurb}
-  slug={album.slug}
+  intro={album.data.intro}
 >
   <Content />
 </AlbumLayout>
