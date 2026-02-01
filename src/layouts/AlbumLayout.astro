@@ -52,3 +52,55 @@ const formatDate = (date: Date) => {
 
   <Lightbox />
 </BaseLayout>
+
+<style is:global>
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
+
+  .photo-image {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+
+  .photo-image.loaded {
+    opacity: 1 !important;
+  }
+
+  .photo-skeleton {
+    transition: opacity 0.15s ease-out;
+  }
+
+  .photo-container.loaded .photo-skeleton {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const containers = document.querySelectorAll('.photo-container');
+
+    containers.forEach((container) => {
+      const img = container.querySelector('.photo-image') as HTMLImageElement;
+
+      if (img.complete && img.naturalHeight !== 0) {
+        container.classList.add('loaded');
+        img.classList.add('loaded');
+      } else {
+        img.addEventListener('load', () => {
+          container.classList.add('loaded');
+          img.classList.add('loaded');
+        });
+
+        img.addEventListener('error', () => {
+          container.classList.add('loaded');
+        });
+      }
+    });
+  });
+</script>
