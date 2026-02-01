@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal website and portfolio for nateotenti.com built with Astro (frontend) and Go (backend API).
+Personal website and portfolio for nateotenti.com built with Astro, hosted on Vercel.
 
 ## Commands
 
@@ -14,29 +14,54 @@ npm run build    # Production build
 npm run preview  # Preview production build locally
 ```
 
-Backend is deployed as AWS Lambda - no local backend dev server.
-
 ## Architecture
 
-### Frontend (Astro + Tailwind)
+### Frontend (Astro + Tailwind + MDX)
 
 - **Pages**: `src/pages/` - Astro pages with file-based routing
   - `index.astro` - Home page
-  - `life/index.astro` - Album listing
-  - `life/[...slug].astro` - Dynamic album detail pages
+  - `life/index.astro` - Album listing (auto-discovers albums from content collection)
+  - `life/[slug].astro` - Dynamic album detail pages
 - **Components**: `src/components/` - Reusable Astro components
-- **Content**: `src/content/albums/` - Markdown files defining photo albums with Zod-validated schema
+- **Content**: `src/content/albums/` - MDX files defining photo albums
+- **Layouts**: `src/layouts/` - Page layouts (BaseLayout, AlbumLayout)
 
-### Photo Layout System
+### Album System (MDX)
 
-The `PhotoLayout.astro` component uses a 12-column grid with layout strings:
-- `'full'` - Full width (col-span-12)
-- `'half half'` - Two images side by side
-- `'third third third'` - Three images
-- `'two-thirds third'` or `'third two-thirds'` - Asymmetric
-- `'quarter'` (col-span-3), `'three-quarters'` (col-span-9)
+Albums are single `.mdx` files in `src/content/albums/` containing both frontmatter metadata and layout:
 
-Layout array in album frontmatter maps images to rows in order. Remaining images default to full-width.
+```mdx
+---
+title: Hawaii 2026
+description: Trip description
+date: 2026-01-18
+cover: https://images.nateotenti.com/albums/hawaii-2026/cover.jpg
+location: Hawaii
+blurb: Optional longer description
+---
+import Photo from '../../components/Photo.astro';
+import PhotoRow from '../../components/PhotoRow.astro';
+
+export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
+
+<Photo src={`${BASE}/photo1.jpg`} />
+
+<PhotoRow>
+  <Photo src={`${BASE}/photo2.jpg`} aspect="landscape" />
+  <Photo src={`${BASE}/photo3.jpg`} aspect="portrait" />
+</PhotoRow>
+```
+
+### Photo Components
+
+**`<Photo>`** - Single image with aspect ratio control
+- `src` - Image URL (required)
+- `aspect` - `'auto'` | `'portrait'` | `'landscape'` | `'square'` | `'16:9'` | `'4:3'` | `'3:2'` | `'2:3'` | `'3:4'`
+- `caption` - Optional caption text
+
+**`<PhotoRow>`** - Horizontal grouping of images
+- `gap` - `'none'` | `'sm'` | `'md'` | `'lg'`
+- `align` - `'top'` | `'center'` | `'bottom'` | `'stretch'`
 
 ### Album Schema (`src/content/config.ts`)
 
@@ -45,26 +70,19 @@ Layout array in album frontmatter maps images to rows in order. Remaining images
   title: string,
   description: string,
   date: Date,
-  cover: string,           // Cover image path
+  cover: string,           // Cover image URL
   location?: string,
   blurb?: string,
-  layout?: string[],       // Layout strings array
-  images: Array<{
-    src: string,
-    date?: Date,
-    place?: string,
-    lat?: number,          // For map markers
-    lng?: number,
-  }>
 }
 ```
 
-### Backend (Go/Lambda)
+### Image Hosting
 
-Located in `backend/`. Gin router deployed via AWS Lambda with API Gateway.
+Images are hosted on Cloudflare R2 at `images.nateotenti.com`. Upload images using rclone:
 
-- `GET /workouts` - Queries DynamoDB `peloton` table (params: `limit`, `duration`)
-- `GET /songs` - Queries DynamoDB `spotify` table (params: `limit`)
+```bash
+rclone sync ./photos r2:nateotenti-images/albums/album-name/
+```
 
 ### Styling
 
