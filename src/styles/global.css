@@ -9,7 +9,7 @@
 
   body {
     background-color: #ffffff;
-    background-image: radial-gradient(#d6d3d1 1px, transparent 1px);
+    background-image: radial-gradient(rgba(231, 229, 228, 0.5) 1px, transparent 1px);
     background-size: 32px 32px;
     @apply text-stone-700;
   }
