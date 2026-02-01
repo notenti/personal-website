@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import AlbumLayout from '../../layouts/AlbumLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Lightbox from '../../components/Lightbox.astro';
 
 export async function getStaticPaths() {
   const albums = await getCollection('albums');
@@ -12,14 +13,240 @@ export async function getStaticPaths() {
 
 const { album } = Astro.props;
 const { Content } = await album.render();
+
+const allPosts = (await getCollection('albums')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const currentSlug = album.slug;
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+  });
+};
+
+const formatDateLong = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+  });
+};
 ---
 
-<AlbumLayout
-  title={album.data.title}
-  date={album.data.date}
-  cover={album.data.cover}
-  location={album.data.location}
-  intro={album.data.intro}
->
-  <Content />
-</AlbumLayout>
+<BaseLayout title={`${album.data.title} - Nate Otenti`} description={album.data.intro}>
+  <main class="min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+      <!-- Mobile header with hamburger -->
+      <header class="lg:hidden mb-8 flex items-center justify-between">
+        <div>
+          <a href="/" class="font-mono text-sm text-stone-400 hover:text-accent mb-2 inline-block">&larr; home</a>
+          <h1 class="text-3xl font-bold text-accent tracking-tight">Life</h1>
+        </div>
+        <button
+          id="mobile-menu-toggle"
+          class="p-2 text-stone-600 hover:text-accent transition-colors"
+          aria-label="Toggle posts menu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </header>
+
+      <!-- Mobile slide-out menu -->
+      <div id="mobile-menu" class="fixed inset-0 z-50 hidden lg:hidden">
+        <div class="absolute inset-0 bg-black/50" id="mobile-menu-overlay"></div>
+        <nav class="absolute right-0 top-0 h-full w-72 bg-surface p-6 shadow-xl overflow-y-auto">
+          <div class="flex justify-between items-center mb-6">
+            <span class="font-mono text-sm text-stone-400">Posts</span>
+            <button id="mobile-menu-close" class="p-2 text-stone-400 hover:text-accent">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <ul class="space-y-4">
+            {allPosts.map((post) => (
+              <li>
+                <a
+                  href={`/life/${post.slug}`}
+                  class="block transition-colors group"
+                >
+                  <span
+                    class:list={[
+                      'font-medium',
+                      post.slug === currentSlug
+                        ? 'text-terracotta underline decoration-terracotta-light underline-offset-4'
+                        : 'text-stone-600 group-hover:text-accent'
+                    ]}
+                  >
+                    {post.data.title}
+                  </span>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <time class="font-mono text-xs text-stone-400">{formatDate(post.data.date)}</time>
+                    {post.data.location && (
+                      <>
+                        <span class="text-stone-300">·</span>
+                        <span class="text-xs text-stone-400">{post.data.location}</span>
+                      </>
+                    )}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+
+      <div class="flex gap-12">
+        <!-- Main content area -->
+        <div class="flex-1 min-w-0">
+          <!-- Desktop header -->
+          <header class="hidden lg:block mb-8">
+            <a href="/" class="font-mono text-sm text-stone-400 hover:text-accent mb-2 inline-block">&larr; home</a>
+            <h1 class="text-4xl font-bold text-accent tracking-tight">Life</h1>
+            <p class="text-stone-500 mt-2">Travel, photos, and notes.</p>
+          </header>
+
+          <article>
+            <header class="mb-8">
+              <h2 class="text-2xl md:text-3xl font-semibold text-stone-900 mb-3">{album.data.title}</h2>
+              <div class="flex flex-wrap items-center gap-3 text-sm text-stone-500">
+                <time class="font-mono">{formatDateLong(album.data.date)}</time>
+                {album.data.location && (
+                  <>
+                    <span class="text-stone-300">·</span>
+                    <span>{album.data.location}</span>
+                  </>
+                )}
+              </div>
+            </header>
+
+            {album.data.intro && (
+              <p class="text-lg text-stone-600 leading-relaxed mb-10">
+                {album.data.intro}
+              </p>
+            )}
+
+            <div class="space-y-2">
+              <Content />
+            </div>
+          </article>
+        </div>
+
+        <!-- Desktop sidebar -->
+        <aside class="hidden lg:block w-64 flex-shrink-0 pt-[7.5rem]">
+          <div>
+            <span class="font-mono text-sm text-stone-400 mb-4 block">Posts</span>
+            <nav>
+              <ul class="space-y-4">
+                {allPosts.map((post) => (
+                  <li>
+                    <a
+                      href={`/life/${post.slug}`}
+                      class="block transition-colors group"
+                    >
+                      <span
+                        class:list={[
+                          'font-medium',
+                          post.slug === currentSlug
+                            ? 'text-terracotta underline decoration-terracotta-light underline-offset-4'
+                            : 'text-stone-600 group-hover:text-accent'
+                        ]}
+                      >
+                        {post.data.title}
+                      </span>
+                      <div class="flex items-center gap-2 mt-0.5">
+                        <time class="font-mono text-xs text-stone-400">{formatDate(post.data.date)}</time>
+                        {post.data.location && (
+                          <>
+                            <span class="text-stone-300">·</span>
+                            <span class="text-xs text-stone-400">{post.data.location}</span>
+                          </>
+                        )}
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <Lightbox />
+</BaseLayout>
+
+<style is:global>
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
+
+  .photo-image {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+
+  .photo-image.loaded {
+    opacity: 1 !important;
+  }
+
+  .photo-skeleton {
+    transition: opacity 0.15s ease-out;
+  }
+
+  .photo-container.loaded .photo-skeleton {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Photo loading
+    const containers = document.querySelectorAll('.photo-container');
+    containers.forEach((container) => {
+      const img = container.querySelector('.photo-image') as HTMLImageElement;
+      if (img.complete && img.naturalHeight !== 0) {
+        container.classList.add('loaded');
+        img.classList.add('loaded');
+      } else {
+        img.addEventListener('load', () => {
+          container.classList.add('loaded');
+          img.classList.add('loaded');
+        });
+        img.addEventListener('error', () => {
+          container.classList.add('loaded');
+        });
+      }
+    });
+
+    // Mobile menu
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const close = document.getElementById('mobile-menu-close');
+
+    const openMenu = () => {
+      menu?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeMenu = () => {
+      menu?.classList.add('hidden');
+      document.body.style.overflow = '';
+    };
+
+    toggle?.addEventListener('click', openMenu);
+    overlay?.addEventListener('click', closeMenu);
+    close?.addEventListener('click', closeMenu);
+  });
+</script>
