@@ -1,24 +1,25 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Lightbox from '../../components/Lightbox.astro';
-import PhotoLayout from '../../components/PhotoLayout.astro';
-import AlbumMap from '../../components/AlbumMap.astro';
+import BaseLayout from './BaseLayout.astro';
+import Lightbox from '../components/Lightbox.astro';
 import { getCollection } from 'astro:content';
 
-export async function getStaticPaths() {
-  const albums = await getCollection('albums');
-  return albums.map((album) => ({
-    params: { slug: album.slug },
-    props: { album, allAlbums: albums },
-  }));
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  cover: string;
+  location?: string;
+  blurb?: string;
+  slug: string;
 }
 
-const { album, allAlbums } = Astro.props;
+const { title, description, date, cover, location, blurb, slug } = Astro.props;
 
-// Get other albums for sidebar (excluding current, sorted by date)
+// Get other albums for sidebar
+const allAlbums = await getCollection('albums');
 const otherAlbums = allAlbums
-  .filter((a: any) => a.slug !== album.slug)
-  .sort((a: any, b: any) => b.data.date.valueOf() - a.data.date.valueOf())
+  .filter(a => a.slug !== slug)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 5);
 
 const formatDate = (date: Date) => {
@@ -34,13 +35,9 @@ const formatShortDate = (date: Date) => {
     month: 'short',
   });
 };
-
-// Default layout if none specified: all images full-width
-const defaultLayout = album.data.images.map(() => 'full');
-const layout = album.data.layout || defaultLayout;
 ---
 
-<BaseLayout title={`${album.data.title} - Nate Otenti`} description={album.data.description}>
+<BaseLayout title={`${title} - Nate Otenti`} description={description}>
   <main class="min-h-screen p-8">
     <div class="max-w-7xl mx-auto p-8">
       <div class="flex flex-col lg:flex-row lg:gap-16">
@@ -49,29 +46,27 @@ const layout = album.data.layout || defaultLayout;
           <a href="/life" class="font-mono text-sm text-stone-400 hover:text-accent mb-8 inline-block">&larr; life</a>
 
           <header class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-semibold text-stone-900 mb-3">{album.data.title}</h1>
+            <h1 class="text-3xl md:text-4xl font-semibold text-stone-900 mb-3">{title}</h1>
             <div class="flex flex-wrap items-center gap-3 text-sm text-stone-500">
-              <time class="font-mono">{formatDate(album.data.date)}</time>
-              {album.data.location && (
+              <time class="font-mono">{formatDate(date)}</time>
+              {location && (
                 <>
                   <span class="text-stone-300">·</span>
-                  <span>{album.data.location}</span>
+                  <span>{location}</span>
                 </>
               )}
-              <span class="text-stone-300">·</span>
-              <span>{album.data.images.length} photos</span>
             </div>
           </header>
 
-          {album.data.blurb && (
+          {blurb && (
             <p class="text-lg text-stone-600 leading-relaxed mb-10 max-w-2xl">
-              {album.data.blurb}
+              {blurb}
             </p>
           )}
 
-          <PhotoLayout images={album.data.images} layout={layout} />
-
-          <AlbumMap images={album.data.images} />
+          <div class="space-y-2">
+            <slot />
+          </div>
         </article>
 
         <!-- Sidebar -->
@@ -80,7 +75,7 @@ const layout = album.data.layout || defaultLayout;
             <div class="sticky top-8">
               <h2 class="text-sm font-medium text-stone-400 mb-4 uppercase tracking-wider">More Albums</h2>
               <nav class="space-y-4">
-                {otherAlbums.map((a: any) => (
+                {otherAlbums.map((a) => (
                   <a href={`/life/${a.slug}`} class="block group">
                     <span class="text-stone-700 group-hover:text-accent transition-colors text-sm font-medium">
                       {a.data.title}
@@ -98,6 +93,5 @@ const layout = album.data.layout || defaultLayout;
     </div>
   </main>
 
-  <Lightbox images={album.data.images} />
+  <Lightbox />
 </BaseLayout>
-

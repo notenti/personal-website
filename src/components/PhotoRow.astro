@@ -1,0 +1,39 @@
+---
+interface Props {
+  gap?: 'none' | 'sm' | 'md' | 'lg';
+  align?: 'top' | 'center' | 'bottom' | 'stretch';
+  class?: string;
+}
+
+const { gap = 'sm', align = 'stretch', class: className = '' } = Astro.props;
+
+const gapClasses: Record<string, string> = {
+  'none': 'gap-0',
+  'sm': 'gap-2',
+  'md': 'gap-4',
+  'lg': 'gap-8',
+};
+
+const alignClasses: Record<string, string> = {
+  'top': 'items-start',
+  'center': 'items-center',
+  'bottom': 'items-end',
+  'stretch': 'items-stretch',
+};
+---
+
+<div class:list={[
+  'flex flex-col sm:flex-row',
+  gapClasses[gap],
+  alignClasses[align],
+  className
+]}>
+  <slot />
+</div>
+
+<style>
+  div > :global(*) {
+    flex: 1;
+    min-width: 0;
+  }
+</style>

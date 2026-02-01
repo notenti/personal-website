@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: string;
+  alt?: string;
+  caption?: string;
+  aspect?: 'auto' | 'landscape' | 'portrait' | 'square' | '16:9' | '4:3' | '3:2' | '2:3' | '3:4';
+  class?: string;
+}
+
+const { src, alt = '', caption, aspect = 'auto', class: className = '' } = Astro.props;
+
+// Map aspect prop to CSS aspect ratio
+const aspectClasses: Record<string, string> = {
+  'auto': '', // Will use natural dimensions from inferSize
+  'landscape': 'aspect-[3/2]',
+  'portrait': 'aspect-[2/3]',
+  'square': 'aspect-square',
+  '16:9': 'aspect-[16/9]',
+  '4:3': 'aspect-[4/3]',
+  '3:2': 'aspect-[3/2]',
+  '2:3': 'aspect-[2/3]',
+  '3:4': 'aspect-[3/4]',
+};
+
+const aspectClass = aspectClasses[aspect] || '';
+const useObjectCover = aspect !== 'auto';
+---
+
+<figure class={`m-0 ${className}`}>
+  <Image
+    src={src}
+    alt={alt}
+    inferSize
+    class:list={[
+      'w-full rounded-sm lightbox-trigger cursor-zoom-in hover:opacity-95 transition-opacity',
+      aspectClass,
+      useObjectCover ? 'object-cover' : ''
+    ]}
+    loading="lazy"
+  />
+  {caption && (
+    <figcaption class="text-center text-xs text-stone-400 mt-1.5 tracking-wide">
+      {caption}
+    </figcaption>
+  )}
+</figure>
