@@ -28,12 +28,14 @@ const formatDate = (date: Date) => {
       ) : (
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           {albums.map((album) => (
-            <a href={`/life/${album.slug}`} class="group block">
-              <div class="relative overflow-hidden rounded-lg">
+            <a href={`/life/${album.slug}`} class="album-card group block opacity-0">
+              <div class="relative overflow-hidden rounded-lg bg-stone-200">
+                <div class="skeleton absolute inset-0 bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200 bg-[length:200%_100%] animate-shimmer" />
                 <img
                   src={album.data.cover}
                   alt={album.data.title}
-                  class="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300"
+                  class="album-image w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300 opacity-0"
+                  loading="eager"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -60,3 +62,64 @@ const formatDate = (date: Date) => {
     </div>
   </main>
 </BaseLayout>
+
+<style>
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
+
+  .album-card {
+    transition: opacity 0.2s ease-out;
+  }
+
+  .album-card.loaded {
+    opacity: 1;
+  }
+
+  .album-image {
+    transition: opacity 0.2s ease-out, transform 0.3s ease-out;
+  }
+
+  .album-image.loaded {
+    opacity: 1;
+  }
+
+  .skeleton {
+    transition: opacity 0.15s ease-out;
+  }
+
+  .album-card.loaded .skeleton {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.album-card');
+
+    cards.forEach((card) => {
+      const img = card.querySelector('.album-image') as HTMLImageElement;
+
+      if (img.complete && img.naturalHeight !== 0) {
+        // Image already loaded (cached)
+        card.classList.add('loaded');
+        img.classList.add('loaded');
+      } else {
+        img.addEventListener('load', () => {
+          card.classList.add('loaded');
+          img.classList.add('loaded');
+        });
+
+        img.addEventListener('error', () => {
+          // Still show the card even if image fails
+          card.classList.add('loaded');
+        });
+      }
+    });
+  });
+</script>
