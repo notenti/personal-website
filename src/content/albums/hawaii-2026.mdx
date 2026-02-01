@@ -1,16 +1,21 @@
 ---
 title: Hawaii 2026
-description: Oʻahu & Maui adventures in January 2026.
 date: 2026-01-18
 cover: https://images.nateotenti.com/albums/hawaii-2026/IMG_2462.jpg
-location: Hawaii
+location: Oahu & Maui, HI
+intro: This was our second trip to both Oahu and Maui, and the first time Cait's DSRL from highschool had seen the light of day in a while.
 ---
 import Photo from '../../components/Photo.astro';
 import PhotoRow from '../../components/PhotoRow.astro';
+import Text from '../../components/Text.astro';
 
 export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
 
 <Photo src={`${BASE}/IMG_2462.jpg`} />
+
+<Text>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt mauris ut ornare dictum
+</Text>
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_2473.jpg`} aspect="landscape" />

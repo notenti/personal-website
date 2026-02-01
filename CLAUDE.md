@@ -33,18 +33,22 @@ Albums are single `.mdx` files in `src/content/albums/` containing both frontmat
 ```mdx
 ---
 title: Hawaii 2026
-description: Trip description
 date: 2026-01-18
 cover: https://images.nateotenti.com/albums/hawaii-2026/cover.jpg
-location: Hawaii
-blurb: Optional longer description
+location: Oʻahu, Maui
+intro: A week exploring the islands.
 ---
 import Photo from '../../components/Photo.astro';
 import PhotoRow from '../../components/PhotoRow.astro';
+import Text from '../../components/Text.astro';
 
 export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
 
 <Photo src={`${BASE}/photo1.jpg`} />
+
+<Text>
+We started our trip on Oʻahu, exploring the North Shore...
+</Text>
 
 <PhotoRow>
   <Photo src={`${BASE}/photo2.jpg`} aspect="landscape" />
@@ -63,16 +67,19 @@ export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
 - `gap` - `'none'` | `'sm'` | `'md'` | `'lg'`
 - `align` - `'top'` | `'center'` | `'bottom'` | `'stretch'`
 
+**`<Text>`** - Storytelling prose between photos
+- Adds vertical margin for breathing room between images
+- Use for narrative text within albums
+
 ### Album Schema (`src/content/config.ts`)
 
 ```typescript
 {
   title: string,
-  description: string,
   date: Date,
   cover: string,           // Cover image URL
-  location?: string,
-  blurb?: string,
+  location?: string,       // Single string, format as needed (e.g., "Oʻahu, Maui")
+  intro?: string,          // Short intro paragraph (also used for SEO meta description)
 }
 ```
 
