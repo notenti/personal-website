@@ -3,7 +3,7 @@ title: Hawaii 2026
 date: 2026-01-18
 cover: https://images.nateotenti.com/albums/hawaii-2026/IMG_2455.jpg
 location: Oahu & Maui, HI
-intro: This was our second trip to both Oahu and Maui, and the first time Cait's DSLR had seen the light of day since highschool. Cait had a run-in with food poisoning on the first day, so I got to spend some time with the farm dog Bingo while she recovered. Once she was back on her feet, we explored a lot of the island, hitting up some of our favorite spots from last time and discovering new ones. Maui was a bit more relaxed, with plenty of time spent swimming with turtles and watching whales breach in the distance. Overall, a fantastic trip filled with great food, beautiful scenery, and lots of memories.
+intro: This was our second trip to both Oahu and Maui, and the first time Cait's DSLR had seen the light of day since highschool. Cait had a run-in with food poisoning on the first day, so I got to spend some time with the farm dog Bingo while she recovered. Once she was back on her feet, we explored a lot of the NOrth Shore, hitting up some of our favorite spots from last time and discovering new ones. Maui was a bit more relaxed, with plenty of time spent swimming with turtles and watching whales breach on the horizon. Overall, a fantastic trip filled with great food, better drinks, beautiful scenery, and lots of memories.
 ---
 import Photo from '../../components/Photo.astro';
 import PhotoRow from '../../components/PhotoRow.astro';
@@ -12,7 +12,7 @@ import Heading from '../../components/Heading.astro';
 
 export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
 
-<Heading location="Oahu, HI" href="https://maps.app.goo.gl/4D7kHN5c6wKABQxdA" subtext="We spent a few days exploring Haleiwa town and the quieter stretches of beach nearby. Watched skydivers float down against the blue sky, listened to the waves roll in, and found a private beach where we could just sit and soak it all in—far from the crowds of Waikiki.">North Shore</Heading>
+<Heading location="Oahu, HI" href="https://maps.app.goo.gl/4D7kHN5c6wKABQxdA" subtext="We spent a few days exploring Haleiwa town and the quieter parts of the North Shore. We watched skydivers float down against the blue sky, listened to the waves roll in, and relaxed on a nearby beach where we could just sit and soak it all in, far from the crowds of Waikiki.">North Shore</Heading>
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_2460.jpg`} aspect="landscape" />
@@ -71,7 +71,7 @@ export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
   <Photo src={`${BASE}/IMG_2659.jpg`} aspect="landscape" />
 </PhotoRow>
 
-<Heading location="Ka'Ena Point, Oahu, HI" href="https://maps.app.goo.gl/ixqL6Hd26wcT5WwE7" subtext="The hike out to the westernmost tip of Oahu felt like reaching the edge of the world. Enormous waves crashed into the rocky shore with enough force that you could feel it in your chest. Albatross nested along the trail, completely unbothered by us passing through their home.">Ka'Ena Point</Heading>
+<Heading location="Ka'Ena Point, Oahu, HI" href="https://maps.app.goo.gl/ixqL6Hd26wcT5WwE7" subtext="The hike out to the westernmost tip of Oahu felt like reaching the edge of the world. Enormous winter waves crashed into the rocky shore with enough force that you could feel it in your chest. Thousands of Albatross nested along the trail, unbothered by us passing through their home. Some were more inclined to pose than others.">Ka'Ena Point</Heading>
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_2834.jpg`} aspect="portrait" />
@@ -106,7 +106,7 @@ export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
   <Photo src={`${BASE}/IMG_2996.jpg`} aspect="landscape" />
 </PhotoRow>
 
-<Heading location="Haleiwa, Oahu, HI" href="https://www.airbnb.com/experiences/158735" subtext="A family-run farm tucked into the hills above Haleiwa. We toured the property, tasted more tropical fruits than I can name, and heard stories about the farm's history passed down through generations.">Lokoea Farms</Heading>
+<Heading location="Haleiwa, Oahu, HI" href="https://www.airbnb.com/experiences/158735" subtext="A family-run farm tucked into the hills above Haleiwa. We toured the property, tasted more tropical fruits than I can name, and heard stories about the farm's history passed down through generations. Cody the farm goat was a hit with everyone, obviously.">Lokoea Farms</Heading>
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_3085.jpg`} aspect="portrait" />
@@ -146,27 +146,23 @@ export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
   <Photo src={`${BASE}/IMG_3127.jpg`} aspect="landscape" />
   </PhotoRow>
 
+<Heading location="Kāʻanapali, Maui, HI" href="https://maps.app.goo.gl/PHe67qHEiPaTxsLb6" subtext="Our Maui basecamp. We snorkeled with sea turtles just offshore, watched humpback whales breach in the distance, and spent lazy afternoons on the beach. Cait even talked me into cliff jumping at Black Rock...after a few Mai Tais.">Kāʻanapali</Heading>
 
-
-<Heading location="Kāʻanapali, Maui, HI" href="https://maps.app.goo.gl/PHe67qHEiPaTxsLb6" subtext="Our Maui basecamp. We snorkeled with sea turtles just offshore, watched humpback whales breach in the distance, and spent lazy afternoons on the beach. Cait even talked me into cliff jumping at Black Rock.">Kāʻanapali</Heading>
-
-<PhotoRow>
-  <Photo src={`${BASE}/IMG_3207.jpg`} aspect="portrait" />
-</PhotoRow>
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_3226.jpg`} aspect="landscape" />
 </PhotoRow>
 
 <PhotoRow>
+  <Photo src={`${BASE}/IMG_3207.jpg`} aspect="portrait" />
+</PhotoRow>
+
+
+<PhotoRow>
   <Photo src={`${BASE}/IMG_3235.jpg`} aspect="landscape" />
 </PhotoRow>
 
-<PhotoRow>
-  <Photo src={`${BASE}/IMG_3255.jpg`} aspect="landscape" />
-</PhotoRow>
-
-<Heading location="Haleakala National Park, Maui, HI" href="https://www.nps.gov/hale/index.htm" subtext="We drove up to explore the massive volcanic crater during the day. The landscape inside feels otherworldly—red cinder cones, silver sword plants, and views that stretch forever. It's easy to see why the name means 'House of the Sun.'">Haleakala</Heading>
+<Heading location="Haleakala National Park, Maui, HI" href="https://www.nps.gov/hale/index.htm" subtext="We drove up to explore the massive volcanic crater early in the morning. The landscape is unlike anything we had ever seen --it felt like being on Mars for a few hours. The crater is so quiet that Cait and I barely had to whisper to chat as we walked. The evevation kept even that to a minimum, though!">Haleakala</Heading>
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_3286.jpg`} aspect="portrait" />
@@ -177,14 +173,14 @@ export const BASE = 'https://images.nateotenti.com/albums/hawaii-2026';
 </PhotoRow>
 
 <PhotoRow>
-  <Photo src={`${BASE}/IMG_3311.jpg`} aspect="landscape" />
-  <Photo src={`${BASE}/IMG_3365.jpg`} aspect="landscape" />
-</PhotoRow>
-
-<PhotoRow>
   <Photo src={`${BASE}/IMG_3380.jpg`} aspect="landscape" />
   <Photo src={`${BASE}/IMG_3381.jpg`} aspect="landscape" />
 </PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_3365.jpg`} aspect="landscape" />
+</PhotoRow>
+
 
 <PhotoRow>
   <Photo src={`${BASE}/IMG_3375.jpg`} aspect="portrait" />
