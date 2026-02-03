@@ -3,10 +3,11 @@ interface Props {
   id?: string;
   location?: string;
   href?: string;
+  subtext?: string;
   class?: string;
 }
 
-const { id, location, href, class: className } = Astro.props;
+const { id, location, href, subtext, class: className } = Astro.props;
 
 // Get the slot content for auto-generating ID if not provided
 const slotContent = await Astro.slots.render('default');
@@ -49,6 +50,9 @@ const slug = id || textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace
       ) : (
         <span class="text-xs text-stone-400">{location}</span>
       )
+    )}
+    {subtext && (
+      <p class="text-sm text-stone-500 mt-1.5 leading-relaxed max-w-prose">{subtext}</p>
     )}
   </div>
 </div>
