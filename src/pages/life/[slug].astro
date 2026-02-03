@@ -37,7 +37,7 @@ const formatDateLong = (date: Date) => {
 
 <BaseLayout title={`${album.data.title} - Nate Otenti`} description={album.data.intro}>
   <main class="min-h-screen p-4 md:p-8">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-screen-2xl mx-auto">
       <!-- Mobile header with hamburger -->
       <header class="lg:hidden mb-8 flex items-center justify-between">
         <div>
@@ -100,9 +100,9 @@ const formatDateLong = (date: Date) => {
         </nav>
       </div>
 
-      <div class="flex gap-12">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_16rem] gap-12">
         <!-- Main content area -->
-        <div class="flex-1 min-w-0">
+        <div class="min-w-0">
           <!-- Desktop header -->
           <header class="hidden lg:block mb-8">
             <a href="/" class="font-mono text-sm text-stone-400 hover:text-accent mb-2 inline-block">&larr; home</a>
@@ -133,11 +133,17 @@ const formatDateLong = (date: Date) => {
             <div class="space-y-2">
               <Content />
             </div>
+
+            <div class="mt-16 pt-8 border-t border-stone-200 flex justify-center">
+              <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="font-mono text-sm text-stone-400 hover:text-accent transition-colors">
+                &uarr; back to top
+              </a>
+            </div>
           </article>
         </div>
 
         <!-- Desktop sidebar -->
-        <aside class="hidden lg:block w-64 flex-shrink-0 pt-[7.5rem]">
+        <aside class="hidden lg:block pt-[7.5rem]">
           <div>
             <span class="font-mono text-sm text-stone-400 mb-4 block">Posts</span>
             <nav>
