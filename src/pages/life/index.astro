@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 
 const albums = (await getCollection('albums')).sort(
@@ -64,6 +65,14 @@ const formatDateLong = (date: Date) => {
                   href={`/life/${album.slug}`}
                   class="block transition-colors group"
                 >
+                  <Image
+                    src={album.data.cover}
+                    alt={album.data.title}
+                    width={200}
+                    height={150}
+                    class="w-full aspect-[4/3] object-cover rounded mb-2"
+                    loading="lazy"
+                  />
                   <span
                     class:list={[
                       'font-medium',
@@ -148,6 +157,14 @@ const formatDateLong = (date: Date) => {
                       href={`/life/${album.slug}`}
                       class="block transition-colors group"
                     >
+                      <Image
+                        src={album.data.cover}
+                        alt={album.data.title}
+                        width={200}
+                        height={150}
+                        class="w-3/4 aspect-[4/3] object-cover rounded mb-2"
+                        loading="lazy"
+                      />
                       <span
                         class:list={[
                           'font-medium',
