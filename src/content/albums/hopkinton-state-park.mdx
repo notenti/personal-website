@@ -1,0 +1,36 @@
+---
+title: Hopkinton State Park
+date: 2026-02-08
+cover: https://images.nateotenti.com/albums/hopkinton-state-park/IMG_3559.jpg
+location: Hopkinton, MA
+intro: Penuche and I have spent many mornings this winter at Hopkinton State Park --most days we're the only ones there. This was a particularly cold day following a snowstorm, so the silence and emptiness stood out. Admist the noise of every day life, it's nice to have a quiet place to go and just be.
+---
+import Photo from '../../components/Photo.astro';
+import PhotoRow from '../../components/PhotoRow.astro';
+import Text from '../../components/Text.astro';
+import Heading from '../../components/Heading.astro';
+
+export const BASE = 'https://images.nateotenti.com/albums/hopkinton-state-park';
+
+
+
+<Photo src={`${BASE}/IMG_3499.jpg`} />
+
+<Photo src={`${BASE}/IMG_3503.jpg`} />
+
+<Photo src={`${BASE}/IMG_3545.jpg`} />
+
+<Photo src={`${BASE}/IMG_3547.jpg`} />
+<PhotoRow>
+    <Photo src={`${BASE}/IMG_3549.jpg`} />
+    <Photo src={`${BASE}/IMG_3550.jpg`} />
+</PhotoRow>
+
+<Photo src={`${BASE}/IMG_3559.jpg`} />
+
+<PhotoRow>
+    <Photo src={`${BASE}/IMG_3551.jpg`} />
+    <Photo src={`${BASE}/IMG_3526.jpg`} />
+</PhotoRow>
+
+<Photo src={`${BASE}/IMG_3519.jpg`} />
