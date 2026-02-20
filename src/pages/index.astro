@@ -19,10 +19,51 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <nav class="flex gap-8 font-mono text-sm tracking-tight">
         <a href="https://github.com/notenti" class="text-stone-600 hover:text-terracotta">github</a>
         <a href="https://www.linkedin.com/in/nathan-otenti/" class="text-stone-600 hover:text-terracotta">linkedin</a>
-        <a href="mailto:otenti.nate@gmail.com" class="text-stone-600 hover:text-terracotta">email</a>
+        <button
+          id="copy-email"
+          class="text-stone-600 hover:text-terracotta transition-colors relative cursor-pointer"
+          data-email="otenti.nate@gmail.com"
+        >
+          email
+          <span
+            id="copy-toast"
+            class="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded bg-stone-800 text-white whitespace-nowrap opacity-0 pointer-events-none transition-all duration-300 translate-y-2"
+          >
+            copied!
+          </span>
+        </button>
         <a href="/life" class="text-stone-600 hover:text-terracotta">life</a>
       </nav>
     </div>
   </main>
+
+<script>
+  const btn = document.getElementById('copy-email') as HTMLButtonElement;
+  const toast = document.getElementById('copy-toast') as HTMLSpanElement;
+
+  btn.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(btn.dataset.email!);
+
+    // Animate toast in
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+
+    // Add a little bounce to the button
+    btn.animate(
+      [
+        { transform: 'scale(1)' },
+        { transform: 'scale(1.2)' },
+        { transform: 'scale(1)' },
+      ],
+      { duration: 300, easing: 'ease-out' }
+    );
+
+    // Fade toast out after a moment
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(0.5rem)';
+    }, 1500);
+  });
+</script>
 
 </BaseLayout>
