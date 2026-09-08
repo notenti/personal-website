@@ -1,0 +1,47 @@
+---
+type: album
+title: Bar Harbor 2026
+date: 2026-07-02
+cover: https://images.nateotenti.com/albums/bar-harbor-2026/IMG_3891.jpg
+location: Bar Harbor, ME
+intro: A few July days around Bar Harbor, with rocky shores, dogs in the water, a stop at Beal's Lobster Pier, and a trip out on the boat.
+---
+import Photo from '../../components/Photo.astro';
+import PhotoRow from '../../components/PhotoRow.astro';
+
+export const BASE = 'https://images.nateotenti.com/albums/bar-harbor-2026';
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_3745.jpg`} aspect="landscape" alt="Grasses along a quiet inlet at sunset" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_3792.jpg`} aspect="landscape" alt="A glowing red lantern overlooking the water at dusk" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_3837.jpg`} aspect="landscape" alt="A brown dog standing in the shallows" />
+  <Photo src={`${BASE}/IMG_3851.jpg`} aspect="landscape" alt="A black and white dog resting on the carpet" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_3891.jpg`} aspect="landscape" alt="Colorful lobster buoys hanging on a shingled wall" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_3902.jpg`} aspect="portrait" alt="An American flag above a wooden dock" />
+  <Photo src={`${BASE}/IMG_3927.jpg`} aspect="portrait" alt="The boat's wheel beside the cabin windows" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_4007.jpg`} aspect="portrait" alt="Seabirds perched on rocks beneath a blue sky" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_4029.jpg`} aspect="landscape" alt="Cormorants perched together on a rocky ledge" />
+  <Photo src={`${BASE}/IMG_4033.jpg`} aspect="landscape" alt="A gull perched on sunlit rocks" />
+</PhotoRow>
+
+<PhotoRow>
+  <Photo src={`${BASE}/IMG_4041.jpg`} aspect="portrait" alt="Evergreen trees along the rocky shoreline" />
+</PhotoRow>
